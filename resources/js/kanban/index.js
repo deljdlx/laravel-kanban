@@ -7,6 +7,7 @@ import { MouseFX } from './ui/ParticlesFX';
 
   console.group('%cindex.js :: 8 =============================', 'color: #135484; font-size: 1rem');
   console.log('📅', new Date().toLocaleString());
+  console.log('🌐', 'Not in package');
   console.groupEnd();
 
     const root = document.getElementById('kanban');
