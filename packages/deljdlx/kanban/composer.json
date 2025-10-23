@@ -1,0 +1,30 @@
+{
+  "$schema": "https://getcomposer.org/schema.json",
+  "name": "deljdlx/kanban",
+  "description": "Empty Laravel package skeleton for Kanban features.",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "deljdlx"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "illuminate/support": "^12.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Deljdlx\\Kanban\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Deljdlx\\Kanban\\KanbanServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
