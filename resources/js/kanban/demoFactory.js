@@ -66,10 +66,10 @@ function demoFactory() {
     });
   });
   const columns = [
-    new Column({ id:'todo',   name:'À faire',     tickets: mk(4) }),
-    new Column({ id:'doing',  name:'En cours',    tickets: mk(3) }),
-    new Column({ id:'review', name:'En revue',    tickets: mk(2) }),
-    new Column({ id:'done',   name:'Terminé',     tickets: mk(3) }),
+    new Column('todo',   'À faire',     mk(4)),
+    new Column('doing',  'En cours',    mk(3)),
+    new Column('review', 'En revue',    mk(2)),
+    new Column('done',   'Terminé',     mk(3)),
   ];
   return { board, columns };
 }

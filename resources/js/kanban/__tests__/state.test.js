@@ -5,7 +5,7 @@ import Ticket from '../models/Ticket';
 
 class MemoryDS {
   constructor(columns = []) { this.columns = columns; }
-  async getColumns() { return this.columns.map(c => new Column(c)); }
+  async getColumns() { return this.columns.map(c => new Column(c.id, c.name, c.tickets)); }
   async save(cols) { this.columns = cols.map(c => (typeof c.toJSON === 'function' ? c.toJSON() : c)); }
 }
 

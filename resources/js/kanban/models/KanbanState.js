@@ -146,7 +146,7 @@ class KanbanState {
         }
         const meta = await (this.dataSource.getColumnsMeta?.() ?? this.dataSource.getColumns());
         // normalize to Column[] with empty tickets
-        this.columns = meta.map(c => new Column({ id: c.id, name: c.name, tickets: [] }));
+    this.columns = meta.map(c => new Column(c.id, c.name, []));
     }
 
     async loadTickets(columnId) {
@@ -252,7 +252,7 @@ class KanbanState {
         // newData can be columns[] or { board, columns }
         this.logger?.debug?.('state.reset()');
         if (Array.isArray(newData)) {
-            this.columns = newData.map(c => c instanceof Column ? c : new Column(c));
+            this.columns = newData.map(c => c instanceof Column ? c : new Column(c.id, c.name, c.tickets));
         } else if (newData && typeof newData === 'object') {
             const board = newData.board || {};
             // Normalize and apply board meta
@@ -273,7 +273,7 @@ class KanbanState {
             if (typeof this.dataSource.setBoardMeta === 'function') {
                 await this.dataSource.setBoardMeta(this.board);
             }
-            this.columns = (newData.columns || []).map(c => c instanceof Column ? c : new Column(c));
+            this.columns = (newData.columns || []).map(c => c instanceof Column ? c : new Column(c.id, c.name, c.tickets));
         } else {
             this.columns = [];
         }

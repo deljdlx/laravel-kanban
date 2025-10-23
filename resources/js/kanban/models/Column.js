@@ -8,22 +8,28 @@
 import Ticket from './Ticket';
 
 class Column {
-    /*
-     * ==== Properties (overview) ====
-     * - id: string                (e.g. 'todo', 'doing', 'review', 'done')
-     * - name: string              (display name)
-     * - tickets: Ticket[]
+    /** @type {string} Identifiant de la colonne (ex: 'todo', 'doing', 'done') */
+    id = '';
+    /** @type {string} Nom affiché de la colonne */
+    name = '';
+    /** @type {import('./Ticket').default[]} Tickets de la colonne */
+    tickets = [];
+
+    /**
+     * Crée une instance de Column.
+     * @param {string} id - Identifiant de la colonne
+     * @param {string} name - Nom affiché
+     * @param {import('./Ticket').default[]} [tickets] - Tickets de la colonne
      */
-    /** @param {{ id: string, name: string, tickets?: (Ticket[]|any[]) }} param0 */
-    constructor({ id, name, tickets = [] }) {
-        this.id = id; // e.g. todo, doing, review, done
+    constructor(id, name, tickets = []) {
+        this.id = id;
         this.name = name;
-        this.tickets = tickets.map(t => t instanceof Ticket ? t : new Ticket(t));
+        this.tickets = (tickets || []).map(t => t instanceof Ticket ? t : new Ticket(t));
     }
     /** @returns {ColumnDTO} */
     toJSON() { return { id: this.id, name: this.name, tickets: this.tickets.map(t => t.toJSON()) }; }
     /** @param {ColumnDTO} dto */
-    static fromJSON(dto) { return new Column({ id: dto.id, name: dto.name, tickets: (dto.tickets||[]).map(Ticket.fromJSON) }); }
+    static fromJSON(dto) { return new Column(dto.id, dto.name, (dto.tickets||[]).map(Ticket.fromJSON)); }
 }
 
 export default Column;
