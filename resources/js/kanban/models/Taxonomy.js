@@ -9,16 +9,35 @@
 // - _allowed: Set<string> (internal lookup)
 //
 export class Taxonomy {
-  constructor(key, label, options) {
+  /** @type {string} Clé de la taxonomie */
+  key = '';
+  /** @type {string} Libellé de la taxonomie */
+  label = '';
+  /** @type {Array<{key: string, label: string}>} Options de la taxonomie */
+  options = [];
+  /** @type {Set<string>} Ensemble des clés autorisées */
+  _allowed = new Set();
+
+  /**
+   * Crée une instance de Taxonomy.
+   * @param {string} key - Clé de la taxonomie
+   * @param {string} label - Libellé
+   * @param {Array<{key: string, label: string}>} [options] - Options
+   */
+  constructor(key, label, options = []) {
+
+
+    console.group('%cTaxonomy.js :: 30 =============================', 'color: #729292; font-size: 1rem');
+    console.log("ici");
+    console.groupEnd();
+
     this.key = String(key);
     this.label = typeof label === 'string' && label.trim() ? label : this.key;
-    const arr = Array.isArray(options) ? options : [];
-    // Normalize into { key, label }
-    this.options = arr.map(o => (typeof o === 'object' && o && 'key' in o)
-      ? { key: String(o.key), label: String(o.label ?? o.key) }
-      : { key: String(o), label: String(o) }
-    );
-    // Fast lookup set
+    this.options = Array.isArray(options)
+      ? options.map(o => (typeof o === 'object' && o && 'key' in o)
+        ? { key: String(o.key), label: String(o.label ?? o.key) }
+        : { key: String(o), label: String(o) })
+      : [];
     this._allowed = new Set(this.options.map(o => o.key));
   }
 
