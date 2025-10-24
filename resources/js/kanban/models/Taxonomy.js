@@ -25,12 +25,6 @@ export class Taxonomy {
    * @param {Array<{key: string, label: string}>} [options] - Options
    */
   constructor(key, label, options = []) {
-
-
-    console.group('%cTaxonomy.js :: 30 =============================', 'color: #729292; font-size: 1rem');
-    console.log("ici");
-    console.groupEnd();
-
     this.key = String(key);
     this.label = typeof label === 'string' && label.trim() ? label : this.key;
     this.options = Array.isArray(options)
