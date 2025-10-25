@@ -98,19 +98,6 @@ export class TicketCard {
     this.onRemove = opts.onRemove;
   }
 
-
-  // note: rendering of taxonomy chips is centralized in components/TaxonomyChip.js used directly in render()
-
-  /**
-   * @param {string} key
-   * @returns {{ label: string, options: Array<{key: string, label: string}> }|undefined}
-   */
-  getTaxonomyMeta(key) {
-    return this.board.getState().getTaxonomyMeta?.(key);
-  }
-
-
-
   /**
    * Ouvre les détails du ticket dans une popup
    * @param {string} id
@@ -120,118 +107,7 @@ export class TicketCard {
   onClick(id, el, data) {
     this.openDetailsPopup(el, data);
   }
-// ...existing code...
-
-  /**
-   * Ouvre le popup d’édition du ticket et gère la mise à jour
-   * @param {HTMLElement} el - Élément DOM de la carte
-   * @param {Object} ticket - Données du ticket à éditer
-   */
-  openEditPopup(el, ticket) {
-    // Utilise le service TicketService injecté via la vue
-    const ticketService = this.board?.services?.ticketService;
-    if (ticketService && typeof ticketService.openEditTicketPopup === 'function') {
-      ticketService.openEditTicketPopup(ticket, el);
-      return;
-    }
-    const form = TicketForm({
-      getOptions: (k) => this.state.getTaxonomyOptions(k),
-      getKeys: () => this.state.getTaxonomyKeys(),
-      getMeta: (k) => this.state.getTaxonomyMeta(k),
-      getAuthors: () => Array.isArray(this.state.board?.authors) ? this.state.board.authors : [],
-      ticket,
-      mode: 'edit'
-    });
-    const onSubmit = async (e) => {
-      e.preventDefault();
-      if (!form.el.checkValidity?.() && form.el.reportValidity) {
-        form.el.reportValidity();
-        return;
-      }
-      const data = form.getData();
-      await this.state.updateTicket(ticket.id, data);
-      const card = this.board.createCardElement({ ...ticket, ...data });
-      el.replaceWith(card);
-      this.board.updateCounts();
-      this.popup.close();
-    };
-    setTimeout(() => {
-      form.el.addEventListener('submit', onSubmit, { once: true });
-    });
-    this.popup.open({
-      title: `Éditer le ticket`,
-      content: () => form.el
-    });
-  }
-
-  /**
-   * Ouvre le popup de confirmation de suppression du ticket
-   * @param {HTMLElement} el
-   */
-  openDeleteConfirm(el) {
-    const id = this.ticket.id;
-    const title = this.ticket.title;
-
-    const modal = this?.opts?.modal;
-    if (modal && typeof modal.open === 'function') {
-      const wrap = document.createElement('div');
-      wrap.innerHTML = `
-          <div style="display:grid; gap:12px;">
-            <p>Êtes-vous sûr de vouloir supprimer «\u00A0${escapeHtml(String(title))}\u00A0» ?</p>
-            <p style="color: var(--kanban-muted); font-size: 12px;">Cette action est irréversible.</p>
-          </div>
-        `;
-
-      const footer = document.createElement('div');
-      footer.innerHTML = `
-              <button class="btn" data-cancel>Annuler</button>
-              <button class="btn btn-danger" data-confirm>Supprimer</button>
-            `;
-
-      const handle = modal.open({ title: 'Supprimer ce ticket ?', body: wrap, footer });
-      footer.querySelector('[data-cancel]')?.addEventListener('click', () => handle.close());
-      footer.querySelector('[data-confirm]')?.addEventListener('click', async () => {
-        try {
-          await this.onRemove?.(id, el, this.ticket);
-        } finally {
-          handle.close();
-        }
-      });
-      return;
-    }
-
-    this.popup.open({
-      title: 'Supprimer ce ticket ?',
-      content: () => {
-        const wrap = document.createElement('div');
-        wrap.innerHTML = `
-          <div style="display:grid; gap:12px;">
-            <p>Êtes-vous sûr de vouloir supprimer «\u00A0${escapeHtml(String(title))}\u00A0» ?</p>
-            <p style="color: var(--kanban-muted); font-size: 12px;">Cette action est irréversible.</p>
-            <div style="display:flex; gap:8px; justify-content:flex-end;">
-              <button class="btn" data-cancel>Annuler</button>
-              <button class="btn btn-danger" data-confirm>Supprimer</button>
-            </div>
-          </div>
-        `;
-        setTimeout(() => {
-          const cancel = wrap.querySelector('[data-cancel]');
-          const confirm = wrap.querySelector('[data-confirm]');
-          cancel?.addEventListener('click', () => this.popup.close());
-          confirm?.addEventListener('click', async () => {
-            try {
-              await this.onRemove?.(id, el, this.ticket);
-            } finally {
-              this.popup.close();
-            }
-          });
-        });
-        return wrap;
-      }
-    });
-  }
-
-
+ 
   /** Create and return the DOM element for the ticket card */
   render() {
     const el = document.createElement('div');
@@ -279,19 +155,17 @@ export class TicketCard {
     el.innerHTML = `
       <div class="card-title">${escapeHtml(this.ticket.title)}</div>
       <div class="card-actions">
-        <button type="button" class="btn btn-icon btn-danger card-delete" aria-label="Supprimer" title="Supprimer">🗑</button>
+        <!-- add buttons here if needed -->
       </div>
       ${descHtml}
       <div class="card-meta">
-    <span>${formatTicketDate(this.ticket.createdAt)}</span>
-  ${authorName ? `<span class="author">${escapeHtml(authorName)}</span>` : ''}
-    ${chips.join(' ')}
+        <span>${formatTicketDate(this.ticket.createdAt)}</span>
+        ${authorName ? `<span class="author">${escapeHtml(authorName)}</span>` : ''}
+        ${chips.join(' ')}
       </div>
     `;
 
-  el.addEventListener('click', () => this.onClick(this.ticket.id, el, this.ticket));
-  const delBtn = el.querySelector('.card-delete');
-  delBtn?.addEventListener('click', (e) => { e.stopPropagation(); this.openDeleteConfirm(el); });
+    el.addEventListener('click', () => this.onClick(this.ticket.id, el, this.ticket));
 
     return el;
   }

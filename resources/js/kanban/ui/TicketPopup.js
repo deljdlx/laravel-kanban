@@ -45,8 +45,14 @@ export class TicketPopup {
       <div class="tab-content" data-tab-content="info"></div>
       <div class="tab-content" data-tab-content="comments" style="display:none;"></div>
     `;
-    // Info tab content
-    const infoNode = buildTicketDetails({ ticket: this.data, getTaxonomyMeta: (k) => this.card.getTaxonomyMeta(k), authors: this.authors });
+    
+    const infoNode = buildTicketDetails({
+      ticket: this.data,
+      getTaxonomyMeta: (k) => this.board.getState().getTaxonomyMeta?.(k),
+      authors: this.authors
+    });
+
+
     const actions = document.createElement('div');
     actions.className = 'tf-actions';
     actions.style.marginTop = '8px';
