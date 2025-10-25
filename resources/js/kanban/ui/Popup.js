@@ -39,6 +39,7 @@ export default class TablerModal {
         </div>
       </div>
     `;
+
     document.body.appendChild(modalEl);
     // Injecte le contenu
     const body = modalEl.querySelector('.modal-body');

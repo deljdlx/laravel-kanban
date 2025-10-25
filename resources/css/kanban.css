@@ -204,12 +204,14 @@ body {
 .credits { margin-top: 18px; color: var(--kanban-muted); font-size: 12px; }
 
 /* Modal/Popup */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index: 1000; }
+/* .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); display:flex; align-items:center; justify-content:center; z-index: 1000; }
 .modal { background: var(--kanban-panel); color: var(--kanban-text); border-radius: 10px; border:1px solid var(--kanban-border); width: min(720px, 92vw); max-height: 86vh; overflow:auto; box-shadow: 0 10px 30px rgba(0,0,0,.4); }
 .modal-header { display:flex; align-items:center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--kanban-border); }
 .modal-title { font-weight: 700; }
 .modal-close { background: transparent; color: var(--kanban-text); border: none; font-size: 22px; cursor: pointer; }
-.modal-body { padding: 14px; }
+.modal-body { padding: 14px; } */
+
+
 .ticket-form .tf-grid { display: grid; gap: 12px; }
 .tf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .tf-field { display: grid; gap: 6px; }
