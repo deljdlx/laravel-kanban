@@ -13,6 +13,28 @@
  */
 
 class Ticket {
+    /**
+     * @type {Commentaire[]}
+     */
+    comments = [];
+
+    /**
+     * Ajoute un commentaire au ticket
+     * @param {Commentaire} commentaire
+     */
+    addComment(commentaire) {
+        if (commentaire && commentaire.ticketId === this.id) {
+            this.comments.push(commentaire);
+        }
+    }
+
+    /**
+     * Retourne la liste des commentaires
+     * @returns {Commentaire[]}
+     */
+    getComments() {
+        return this.comments;
+    }
     /** @type {string} Identifiant unique du ticket */
     id = '';
     /** @type {string} Titre du ticket */
@@ -62,16 +84,23 @@ class Ticket {
     }
     /** @returns {TicketDTO} */
     toJSON() {
-        const base = { id: this.id, title: this.title, description: this.description, author: this.author, authorId: this.authorId, createdAt: this.createdAt };
-        // Prefer taxonomies bag; fall back to legacy shim if needed
-        const tx = this.taxonomies || { label: this.label ?? null, category: this.category ?? null, complexity: this.complexity ?? null };
-        return { ...base, taxonomies: tx };
+    const base = { id: this.id, title: this.title, description: this.description, author: this.author, authorId: this.authorId, createdAt: this.createdAt };
+    // Prefer taxonomies bag; fall back to legacy shim if needed
+    const tx = this.taxonomies || { label: this.label ?? null, category: this.category ?? null, complexity: this.complexity ?? null };
+    const comments = Array.isArray(this.comments) ? this.comments.map(c => (typeof c.toJSON === 'function' ? c.toJSON() : c)) : [];
+    return { ...base, taxonomies: tx, comments };
     }
     /** @param {TicketDTO & {taxonomies?: Record<string,string|null>}} dto */
     static fromJSON(dto) {
-        // Build taxonomies from explicit bag or legacy fields
-        const taxonomies = dto.taxonomies ? { ...dto.taxonomies } : undefined;
-        return new Ticket(dto.title, { ...dto, taxonomies });
+                // Build taxonomies from explicit bag or legacy fields
+                const taxonomies = dto.taxonomies ? { ...dto.taxonomies } : undefined;
+                const ticket = new Ticket(dto.title, { ...dto, taxonomies });
+                if (Array.isArray(dto.comments)) {
+                    // eslint-disable-next-line global-require
+                    const Commentaire = require('./Commentaire').default;
+                    ticket.comments = dto.comments.map(c => Commentaire.fromJSON ? Commentaire.fromJSON(c) : c);
+                }
+                return ticket;
     }
 }
 
