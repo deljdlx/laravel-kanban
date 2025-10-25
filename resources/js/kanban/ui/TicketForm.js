@@ -1,7 +1,7 @@
 import escapeHtml from '../utils/escapeHtml';
 
 /**
- * NewTicketForm
+ * TicketForm
  * - Rend un formulaire de création de ticket
  * - Retourne { el, getData }
  *
@@ -12,12 +12,30 @@ import escapeHtml from '../utils/escapeHtml';
  * @param {Function} options.getAuthors - Retourne la liste des auteurs
  * @returns {{ el: HTMLFormElement, getData: Function }}
  */
-export function NewTicketForm({ getOptions, getKeys, getMeta, getAuthors } = {}) {
-  // Helpers par défaut si non fournis
+/**
+ * TicketForm
+ * - Affiche un formulaire pour créer ou éditer un ticket
+ * @param {Object} options
+ * @param {Function} options.getOptions
+ * @param {Function} options.getKeys
+ * @param {Function} options.getMeta
+ * @param {Function} options.getAuthors
+ * @param {Object} [options.ticket] - Ticket à éditer (pré-remplissage)
+ * @param {string} [options.mode] - 'edit' ou 'create'
+ */
+export function TicketForm({ getOptions, getKeys, getMeta, getAuthors, ticket = null, mode = 'create' } = {}) {
   getOptions = getOptions || (() => []);
   getKeys = getKeys || (() => []);
   getMeta = getMeta || ((k) => ({ label: k, options: [] }));
   getAuthors = getAuthors || (() => []);
+
+  // Pré-remplissage des champs
+  const initial = {
+    title: ticket?.title || '',
+    description: ticket?.description || '',
+    authorId: ticket?.authorId || '',
+    taxonomies: ticket?.taxonomies || {},
+  };
 
   /**
    * Rend le select pour une taxonomie
@@ -27,8 +45,9 @@ export function NewTicketForm({ getOptions, getKeys, getMeta, getAuthors } = {})
   function renderTaxonomySelect(key) {
     const meta = getMeta(key) || { label: key, options: [] };
     const values = (meta.options || getOptions(key) || []).filter(Boolean);
+    const selected = initial.taxonomies?.[key] ?? '';
     const optionsHtml = ['<option value="">--</option>']
-      .concat(values.map(o => `<option value="${escapeHtml(String(o.key))}">${escapeHtml(String(o.label))}</option>`))
+      .concat(values.map(o => `<option value="${escapeHtml(String(o.key))}"${selected === String(o.key) ? ' selected' : ''}>${escapeHtml(String(o.label))}</option>`))
       .join('');
     return `
       <label class="tf-field">
@@ -44,8 +63,9 @@ export function NewTicketForm({ getOptions, getKeys, getMeta, getAuthors } = {})
    */
   function renderAuthorSelect() {
     const authors = getAuthors() || [];
+    const selected = initial.authorId ?? '';
     const optionsHtml = ['<option value="">--</option>']
-      .concat(authors.map(a => `<option value="${escapeHtml(String(a.id))}">${escapeHtml(String(a.name))}</option>`))
+      .concat(authors.map(a => `<option value="${escapeHtml(String(a.id))}"${selected === String(a.id) ? ' selected' : ''}>${escapeHtml(String(a.name))}</option>`))
       .join('');
     return `
       <label class="tf-field">
@@ -71,11 +91,11 @@ export function NewTicketForm({ getOptions, getKeys, getMeta, getAuthors } = {})
       <div class="tf-grid">
         <label class="tf-field">
           <span class="tf-label">Titre</span>
-          <input class="tf-input" name="title" type="text" required placeholder="Titre du ticket">
+          <input class="tf-input" name="title" type="text" required placeholder="Titre du ticket" value="${escapeHtml(initial.title)}">
         </label>
         <label class="tf-field">
           <span class="tf-label">Description</span>
-          <textarea class="tf-input" name="description" rows="3" placeholder="Description (optionnelle)"></textarea>
+          <textarea class="tf-input" name="description" rows="3" placeholder="Description (optionnelle)">${escapeHtml(initial.description)}</textarea>
         </label>
         <div class="tf-row">
           ${renderAuthorSelect()}
@@ -83,7 +103,7 @@ export function NewTicketForm({ getOptions, getKeys, getMeta, getAuthors } = {})
         </div>
         ${rowsAfter.join('')}
         <div class="tf-actions">
-          <button type="submit" class="btn">Créer</button>
+          <button type="submit" class="btn">${mode === 'edit' ? 'Enregistrer' : 'Créer'}</button>
         </div>
       </div>
     `;

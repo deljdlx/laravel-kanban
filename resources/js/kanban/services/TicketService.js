@@ -1,5 +1,5 @@
 
-import { NewTicketForm } from '../ui/NewTicketForm.js';
+import { TicketForm } from '../ui/TicketForm.js';
 
 /**
  * TicketService
@@ -23,7 +23,7 @@ export class TicketService {
    * @param {string} [columnId] - ID de la colonne cible
    */
   openCreateTicketPopup(columnId) {
-    const form = NewTicketForm({
+    const form = TicketForm({
       getOptions: (k) => this.state.getTaxonomyOptions(k),
       getKeys: () => this.state.getTaxonomyKeys(),
       getMeta: (k) => this.state.getTaxonomyMeta(k),
