@@ -18,7 +18,19 @@ import { MouseFX } from './ui/ParticlesFX';
 
     const root = document.getElementById('kanban');
     if (!root) return;
-  const controller = new KanbanApplication(root);
+    // Injection de dépendances
+    const controller = new KanbanApplication({
+        root,
+        // On peut injecter ici des factories personnalisées si besoin
+        // createLogger: () => createLogger('Kanban'),
+        // createStorage: () => createDefaultStorage(),
+        // createDataSource: (logger, storage) => new DemoDataSource(demoFactory, 'demo.kanban.v6', logger, storage),
+        // createThemeService: (storage) => new ThemeService(storage),
+        // createBackgroundService: (storage) => new BackgroundService(storage),
+        // createFilterService: (state, storage, view, logger) => new FilterService(state, storage, view, logger),
+        // createImportService: (view, cb) => new ImportService(view, cb),
+        // createModal: () => new PopupModalAdapter(),
+    });
     await controller.init();
     // Soft mouse trail (gentle)
     try {

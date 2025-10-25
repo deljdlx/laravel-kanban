@@ -2,7 +2,7 @@ import KanbanState from './models/KanbanState';
 import demoFactory from './demoFactory';
 import { DemoDataSourceAdapter as DemoDataSource } from './datasource/DataSourceAdapter';
 import { createDefaultStorage } from './storage/StorageStrategy';
-import createLogger from './utils/createLogger';
+import createLoggerOrig from './utils/createLogger';
 import { KanbanView } from './KanbanView';
 import openCreateTicketPopup from './ui/createTicket';
 import ThemeService from './services/ThemeService';
@@ -12,26 +12,42 @@ import ImportService from './services/ImportService';
 import PopupModalAdapter from './ui/adapters/PopupModalAdapter';
 
 export default class KanbanApplication {
-	constructor(root = document.getElementById('kanban')) {
+	/**
+	 * @param {Object} options
+	 * @param {HTMLElement} options.root
+	 * @param {Function} [options.createLogger]
+	 * @param {Function} [options.createStorage]
+	 * @param {Function} [options.createDataSource]
+	 * @param {Function} [options.createThemeService]
+	 * @param {Function} [options.createBackgroundService]
+	 * @param {Function} [options.createFilterService]
+	 * @param {Function} [options.createImportService]
+	 * @param {Function} [options.createModal]
+	 */
+	constructor({
+		root,
+		createLogger = () => createLoggerOrig('Kanban'),
+		createStorage = () => createDefaultStorage(),
+		createDataSource = (logger, storage) => new DemoDataSource(demoFactory, 'demo.kanban.v6', logger, storage),
+		createThemeService = (storage) => new ThemeService(storage),
+		createBackgroundService = (storage) => new BackgroundService(storage),
+		createFilterService = (state, storage, view, logger) => new FilterService(state, storage, view, logger),
+		createImportService = (view, cb) => new ImportService(view, cb),
+		createModal = () => new PopupModalAdapter(),
+	}) {
 		this.root = root;
-		// Logger service (can be swapped): see types/contracts.js for the Logger contract
-		this.logger = createLogger('Kanban');
-		// Storage (impl locale par défaut)
-		this.storage = createDefaultStorage();
-		// DataSource (repository): remplaçable par une impl API plus tard
-		this.dataSource = new DemoDataSource(demoFactory, 'demo.kanban.v6', this.logger, this.storage);
-		// Model (state) consomme DataSource via un contrat simple
+		this.logger = createLogger();
+		this.storage = createStorage();
+		this.dataSource = createDataSource(this.logger, this.storage);
 		this.state = new KanbanState(this.dataSource, { logger: this.logger });
 		this.view = null;
-
-		// Services
-		// Services UI facultatifs (thème, fond, filtres, import)
-		this.theme = new ThemeService(this.storage);
-		this.background = new BackgroundService(this.storage);
-		this.filters = null; // created after view
-		this.importer = null; // created after view
-		// Modal service (DI minimal): on commence avec l'adapter Popup
-		this.modal = new PopupModalAdapter();
+		this.theme = createThemeService(this.storage);
+		this.background = createBackgroundService(this.storage);
+		this.filters = null;
+		this.importer = null;
+		this.modal = createModal();
+		// Stocke les factories pour usage ultérieur si besoin
+		this._factories = { createLogger, createStorage, createDataSource, createThemeService, createBackgroundService, createFilterService, createImportService, createModal };
 	}
 
 	async init() {
@@ -42,7 +58,7 @@ export default class KanbanApplication {
 
 		// Initialize services
 		this.theme.init();
-		this.filters = new FilterService(this.state, this.storage, this.view, this.logger);
+		this.filters = this._factories.createFilterService(this.state, this.storage, this.view, this.logger);
 		this.filters.init();
 		this.filters.hookView(this.view);
 		this.bindToolbar();
@@ -161,19 +177,16 @@ export default class KanbanApplication {
 		this.logger.debug('controller.resetBoard');
 		// Clear all app storage (theme, filters, background image, demo data)
 		try { this.storage.clear(); } catch { }
-		// Remove any inline background style
 		document.body.style.backgroundImage = '';
 		document.body.classList.remove('has-custom-bg');
-		// Recreate dataSource with a fresh storage reference (same object, but data wiped)
-		this.dataSource = new DemoDataSource(demoFactory, 'demo.kanban.v6', this.logger, this.storage);
-		// Reset state by reloading demo factory
+		// Recreate dataSource and services via factories
+		this.dataSource = this._factories.createDataSource(this.logger, this.storage);
 		const cfg = demoFactory();
 		await this.state.reset(cfg);
-		// Rebuild the view
 		this.view.dispose?.();
 		this.view = new KanbanView(this.root, this.state, this.logger);
 		this.renderTitle();
-		this.filters = new FilterService(this.state, this.storage, this.view, this.logger);
+		this.filters = this._factories.createFilterService(this.state, this.storage, this.view, this.logger);
 		this.filters.init();
 		this.filters.hookView(this.view);
 	}
