@@ -254,12 +254,14 @@ class KanbanState {
      * @param {Object} data - Données à appliquer au ticket
      * @returns {Promise<void>}
      */
-    async updateTicket(id, data) {
-        const found = this.#findTicket(id);
-        if (!found) throw new Error('Ticket non trouvé: ' + id);
-        found.col.tickets[found.idx] = { ...found.ticket, ...data };
-        await this.persist({ op: 'updateTicket', ticketId: id, columnId: found.col.id, ticket: found.col.tickets[found.idx] });
-    }
+        async updateTicket(id, data) {
+            const found = this.#findTicket(id);
+            if (!found) throw new Error('Ticket non trouvé: ' + id);
+            // Conserve l’instance Ticket pour garantir toJSON
+            const updated = new Ticket(found.ticket.title, { ...found.ticket, ...data });
+            found.col.tickets[found.idx] = updated;
+            await this.persist({ op: 'updateTicket', ticketId: id, columnId: found.col.id, ticket: updated });
+        }
 
     async reset(newData) {
         // newData can be columns[] or { board, columns }
