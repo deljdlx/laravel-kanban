@@ -264,7 +264,8 @@ class KanbanState {
         const found = this.#findTicket(id);
         if (!found) throw new Error('Ticket non trouvé: ' + id);
         // Conserve l’instance Ticket pour garantir toJSON
-        const updated = new Ticket(found.ticket.title, { ...found.ticket, ...data });
+        const updated = new Ticket(data.title ?? found.ticket.title, { ...found.ticket, ...data });
+
 
         if(Array.isArray(data.comments)) {
             updated.comments = data.comments;

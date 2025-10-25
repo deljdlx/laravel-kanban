@@ -77,6 +77,7 @@ export class DemoRepository {
       board: existing.board || this.normalizer.defaultBoard(),
       columns: (columnsDTO || []).map(c => ColumnSerializer.toDTO(c)),
     };
+
     this.store.write(dto);
     this.logger?.debug?.('save board+columns', dto);
   }
