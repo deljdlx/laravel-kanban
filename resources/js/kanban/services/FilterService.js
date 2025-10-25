@@ -5,6 +5,11 @@ export default class FilterService {
     this.view = view;
     this.logger = logger;
     this.FILTER_LOGIC_KEY = filterKey;
+
+    console.group('%cFilterService.js :: 9 =============================', 'color: #358325; font-size: 1rem');
+    console.log(this.storage);
+    console.groupEnd();
+
     this._filterLogic = (this.storage.getItem(this.FILTER_LOGIC_KEY) === 'OR') ? 'OR' : 'AND';
     this._filters = {};
     this._filtersToggle = null;

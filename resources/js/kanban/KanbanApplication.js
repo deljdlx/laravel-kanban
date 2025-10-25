@@ -27,7 +27,7 @@ export default class KanbanApplication {
 	constructor({
 		root,
 		createLogger = () => createLoggerOrig('Kanban'),
-		createStorage = () => () => new LocalStorageStrategy(),
+		createStorage = () => new LocalStorageStrategy(),
 		createDataSource = (logger, storage) => new DemoDataSourceAdapter(demoFactory, 'demo.kanban.v6', logger, storage),
 		createThemeService = (storage) => new ThemeService(storage),
 		createBackgroundService = (storage) => new BackgroundService(storage),
@@ -35,6 +35,7 @@ export default class KanbanApplication {
 		createImportService = (view, cb) => new ImportService(view, cb),
 		createModal = () => new PopupModalAdapter(),
 	}) {
+
 		this.root = root;
 		this.logger = createLogger();
 		this.storage = createStorage();

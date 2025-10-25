@@ -86,11 +86,6 @@ class TicketCard {
     const tx = sanitizeTaxonomies(ticket?.taxonomies || legacyToTaxonomies(ticket || {}), opts.allowedMap);
     this.ticket = { ...ticket, taxonomies: tx };
     this.onRemove = opts.onRemove;
-
-
-    console.group('%cTicketCard.js :: 91 =============================', 'color: #203322; font-size: 1rem');
-    console.log('ticket', this.ticket);
-    console.groupEnd();
   }
 
 
