@@ -2,6 +2,7 @@ import { buildTicketDetails } from './components/TicketDetails';
 import { escapeHtml } from '../utils/escapeHtml';
 
 import { TicketCard } from './TicketCard';
+import { TicketForm } from './TicketForm';
 
 import { Commentaire } from '../models/Commentaire';
 
@@ -86,7 +87,8 @@ export class TicketPopup {
     setTimeout(() => {
       infoNode.querySelector('[data-edit]')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        this.card.openEditPopup(this.el, this.data);
+        // this.card.openEditPopup(this.el, this.data);
+        this.openEditPopup(this.el, this.data);
       });
       infoNode.querySelector('[data-delete]')?.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -145,6 +147,55 @@ export class TicketPopup {
     modalOrPopup.open({
       title: this.data?.title || 'Ticket',
       content: () => this.buildContent()
+    });
+  }
+
+  /**
+   * Ouvre le popup d’édition du ticket et gère la mise à jour
+   * @param {HTMLElement} el - Élément DOM de la carte
+   * @param {Object} ticket - Données du ticket à éditer
+   */
+  openEditPopup(el, ticket) {
+    // Utilise le service TicketService injecté via la vue
+    const ticketService = this.board?.services?.ticketService;
+    if (ticketService && typeof ticketService.openEditTicketPopup === 'function') {
+      ticketService.openEditTicketPopup(ticket, el);
+      return;
+    }
+    // Fallback : popup simple avec formulaire d’édition
+    // const TicketForm = window.TicketForm || window.NewTicketForm;
+    // if (!TicketForm) {
+    //   console.error('TicketForm ou NewTicketForm n’est pas disponible dans window.');
+    //   return;
+    // }
+
+    const form = TicketForm({
+      getOptions: (k) => this.state.getTaxonomyOptions(k),
+      getKeys: () => this.state.getTaxonomyKeys(),
+      getMeta: (k) => this.state.getTaxonomyMeta(k),
+      getAuthors: () => Array.isArray(this.state.board?.authors) ? this.state.board.authors : [],
+      ticket,
+      mode: 'edit'
+    });
+    const onSubmit = async (e) => {
+      e.preventDefault();
+      if (!form.el.checkValidity?.() && form.el.reportValidity) {
+        form.el.reportValidity();
+        return;
+      }
+      const data = form.getData();
+      await this.state.updateTicket(ticket.id, data);
+      const card = this.card.board.createCardElement({ ...ticket, ...data });
+      el.replaceWith(card);
+      this.card.board.updateCounts();
+      this.card.popup.close();
+    };
+    setTimeout(() => {
+      form.el.addEventListener('submit', onSubmit, { once: true });
+    });
+    this.card.popup.open({
+      title: `Éditer le ticket`,
+      content: () => form.el
     });
   }
 }
