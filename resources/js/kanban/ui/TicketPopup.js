@@ -6,6 +6,13 @@ import { TicketForm } from './TicketForm';
 
 import { Commentaire } from '../models/Commentaire';
 
+
+
+/**
+ * @property { TicketCard } card
+ * @property { State} state
+ * @property { Board} board
+ */
 export class TicketPopup {
   /**
    * @param {Object} params
@@ -15,13 +22,15 @@ export class TicketPopup {
    * @param {Object} params.modal
    */
 
-
   constructor({ card, el, data, modal }) {
     this.card = card;
+    this.state = card.state;
+    this.board = card.board;
+    this.ticket = card.ticket;
+
     this.el = el;
     this.data = data;
     this.modal = modal;
-    this.state = card.state;
     this.authors = Array.isArray(card?.opts?.authors) ? card.opts.authors : (Array.isArray(card.state.board?.authors) ? card.state.board.authors : []);
   }
 
@@ -92,7 +101,7 @@ export class TicketPopup {
       });
       infoNode.querySelector('[data-delete]')?.addEventListener('click', (e) => {
         e.stopPropagation();
-        this.card.openDeleteConfirm(this.el);
+        this.openDeleteConfirm(this.el);
       });
     });
     return tabs;
@@ -187,7 +196,7 @@ export class TicketPopup {
       await this.state.updateTicket(ticket.id, data);
       const card = this.card.board.createCardElement({ ...ticket, ...data });
       el.replaceWith(card);
-      this.card.board.updateCounts();
+      this.board.updateCounts();
       this.card.popup.close();
     };
     setTimeout(() => {
@@ -196,6 +205,69 @@ export class TicketPopup {
     this.card.popup.open({
       title: `Éditer le ticket`,
       content: () => form.el
+    });
+  }
+
+  openDeleteConfirm(el) {
+    const id = this.ticket.id;
+    const title = this.ticket.title;
+
+    const modal = this?.opts?.modal;
+    if (modal && typeof modal.open === 'function') {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `
+          <div style="display:grid; gap:12px;">
+            <p>Êtes-vous sûr de vouloir supprimer «\u00A0${escapeHtml(String(title))}\u00A0» ?</p>
+            <p style="color: var(--kanban-muted); font-size: 12px;">Cette action est irréversible.</p>
+          </div>
+        `;
+
+      const footer = document.createElement('div');
+      footer.innerHTML = `
+              <button class="btn" data-cancel>Annuler</button>
+              <button class="btn btn-danger" data-confirm>Supprimer</button>
+            `;
+
+      const handle = modal.open({ title: 'Supprimer ce ticket ?', body: wrap, footer });
+      footer.querySelector('[data-cancel]')?.addEventListener('click', () => handle.close());
+      footer.querySelector('[data-confirm]')?.addEventListener('click', async () => {
+        try {
+          await this.onRemove?.(id, el, this.ticket);
+        } finally {
+          handle.close();
+        }
+      });
+      return;
+    }
+
+    this.card.popup.open({
+      title: 'Supprimer ce ticket ?',
+      content: () => {
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `
+          <div style="display:grid; gap:12px;">
+            <p>Êtes-vous sûr de vouloir supprimer «\u00A0${escapeHtml(String(title))}\u00A0» ?</p>
+            <p style="color: var(--kanban-muted); font-size: 12px;">Cette action est irréversible.</p>
+            <div style="display:flex; gap:8px; justify-content:flex-end;">
+              <button class="btn" data-cancel>Annuler</button>
+              <button class="btn btn-danger" data-confirm>Supprimer</button>
+            </div>
+          </div>
+        `;
+        setTimeout(() => {
+          const cancel = wrap.querySelector('[data-cancel]');
+          const confirm = wrap.querySelector('[data-confirm]');
+          cancel?.addEventListener('click', () => this.card.popup.close());
+          confirm?.addEventListener('click', async () => {
+            try {
+              await this.card.onRemove?.(id, el, this.ticket);
+            } finally {
+              this.card.popup.close();
+            }
+          });
+        });
+        return wrap;
+      }
     });
   }
 }
