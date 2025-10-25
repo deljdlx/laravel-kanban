@@ -1,3 +1,4 @@
+
 /**
  * TicketCard (vue de carte) — guide débutant:
  * - Cette classe affiche une carte et gère les clics/suppression via des callbacks.
@@ -7,10 +8,8 @@
 import formatTicketDate from '../utils/formatDate';
 import escapeHtml from '../utils/escapeHtml';
 import { sanitizeTaxonomies, legacyToTaxonomies } from '../utils/taxonomies';
-import { renderTaxonomyChip } from './components/TaxonomyChip';
-import { buildTicketDetails } from './components/TicketDetails';
-
 import { TicketForm } from './TicketForm.js';
+import { TicketPopup } from './TicketPopup.js';
 
 /** @typedef {import('../KanbanView').KanbanView} KanbanView */
 /** @typedef {import('../models/KanbanState').default} KanbanState */
@@ -50,124 +49,8 @@ class TicketCard {
    * @param {Ticket} data
    */
   openDetailsPopup(el, data) {
-    const modal = this?.opts?.modal;
-    const buildContent = () => {
-      const authors = Array.isArray(this?.opts?.authors) ? this.opts.authors : (Array.isArray(this.state.board?.authors) ? this.state.board.authors : []);
-      // Tabs container
-      const tabs = document.createElement('div');
-      tabs.className = 'kanban-popup-tabs';
-      tabs.innerHTML = `
-        <div class="tab-header" style="display:flex; gap:8px; margin-bottom:8px;">
-          <button type="button" class="btn btn-light tab-btn" data-tab="info">Infos</button>
-          <button type="button" class="btn btn-light tab-btn" data-tab="comments">Commentaires</button>
-        </div>
-        <div class="tab-content" data-tab-content="info"></div>
-        <div class="tab-content" data-tab-content="comments" style="display:none;"></div>
-      `;
-      // Info tab content
-      const infoNode = buildTicketDetails({ ticket: data, getTaxonomyMeta: (k) => this.getTaxonomyMeta(k), authors });
-      const actions = document.createElement('div');
-      actions.className = 'tf-actions';
-      actions.style.marginTop = '8px';
-      actions.innerHTML = `
-        <button type="button" class="btn btn-primary" data-edit>Éditer</button>
-        <button type="button" class="btn btn-danger" data-delete>Supprimer</button>
-      `;
-      infoNode.appendChild(actions);
-      tabs.querySelector('[data-tab-content="info"]').appendChild(infoNode);
-      // Comments tab content (affiche les vrais commentaires + formulaire)
-      const commentsNode = document.createElement('div');
-      commentsNode.className = 'kanban-comments-list';
-      const comments = Array.isArray(data.comments) ? data.comments : [];
-      const renderComments = () => {
-        if (comments.length === 0) {
-          commentsNode.innerHTML = `<div style="padding:8px; color:#888;">Aucun commentaire pour le moment.</div>`;
-        } else {
-          commentsNode.innerHTML = comments.map(c => `
-            <div class="kanban-comment" style="border-bottom:1px solid #eee; padding:8px 0;">
-              <div style="font-size:13px; color:#555; margin-bottom:2px;">
-                <span style="font-weight:bold;">${escapeHtml(c.author || 'Anonyme')}</span>
-                <span style="color:#aaa; font-size:12px; margin-left:8px;">${new Date(c.createdAt).toLocaleString()}</span>
-              </div>
-              <div style="font-size:14px;">${escapeHtml(c.text)}</div>
-            </div>
-          `).join('');
-        }
-      };
-      renderComments();
-
-      // Formulaire d’ajout de commentaire
-      const form = document.createElement('form');
-      form.className = 'kanban-comment-form';
-      form.innerHTML = `
-        <textarea name="comment" rows="2" style="width:100%;margin-bottom:6px;resize:vertical;" placeholder="Ajouter un commentaire..."></textarea>
-        <div style="display:flex;justify-content:flex-end;gap:8px;">
-          <button type="submit" class="btn btn-primary">Envoyer</button>
-        </div>
-      `;
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const textarea = form.querySelector('textarea[name="comment"]');
-        const text = textarea.value.trim();
-        if (!text) return;
-        let Commentaire = null;
-        try { Commentaire = require('../models/Commentaire').default; } catch { Commentaire = window.Commentaire; }
-        const author = (Array.isArray(authors) && authors[0]?.name) ? authors[0].name : 'Anonyme';
-        const authorId = (Array.isArray(authors) && authors[0]?.id) ? authors[0].id : null;
-        const commentaire = Commentaire ? new Commentaire(text, { ticketId: data.id, author, authorId }) : { text, author, authorId, ticketId: data.id, createdAt: Date.now() };
-        if (typeof data.addComment === 'function') {
-          data.addComment(commentaire);
-        } else {
-          if (!Array.isArray(data.comments)) data.comments = [];
-          data.comments.push(commentaire);
-        }
-        textarea.value = '';
-        renderComments();
-        if (this.state && typeof this.state.updateTicket === 'function') {
-          this.state.updateTicket(data.id, { comments: data.comments });
-        }
-      });
-      const commentsTab = tabs.querySelector('[data-tab-content="comments"]');
-      commentsTab.appendChild(commentsNode);
-      commentsTab.appendChild(form);
-      // Tab switching logic
-      const btns = tabs.querySelectorAll('.tab-btn');
-      btns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          btns.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const tab = btn.getAttribute('data-tab');
-          tabs.querySelectorAll('.tab-content').forEach(tc => {
-            tc.style.display = tc.getAttribute('data-tab-content') === tab ? '' : 'none';
-          });
-        });
-      });
-      // Default active tab
-      btns[0].classList.add('active');
-      // Actions listeners
-      setTimeout(() => {
-        infoNode.querySelector('[data-edit]')?.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.openEditPopup(el, data);
-        });
-        infoNode.querySelector('[data-delete]')?.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.openDeleteConfirm(el);
-        });
-      });
-      return tabs;
-    };
-
-    if (modal && typeof modal.open === 'function') {
-      const handle = modal.open({ title: data?.title || 'Ticket', body: buildContent() });
-      this._lastModal = handle;
-      return;
-    }
-
-    this.popup.open({
-      title: data?.title || 'Ticket',
-      content: buildContent
-    });
+    const popup = new TicketPopup({ card: this, el, data, modal: this?.opts?.modal });
+    popup.open(this.popup);
   }
   /**
    * @param {KanbanView} board
