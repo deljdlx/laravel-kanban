@@ -1,4 +1,22 @@
 import KanbanState from './models/KanbanState';
+
+/**
+ * KanbanApplication — Bootstrap principal du module Kanban
+ * @class
+ * @property {HTMLElement} root - Élément racine du Kanban (container DOM)
+ * @property {Object} logger - Logger pour la journalisation/debug
+ * @property {Object} storage - Stratégie de stockage (localStorage, mémoire, etc.)
+ * @property {DemoDataSourceAdapter|{getBoardMeta:Function, setBoardMeta:Function, getColumns:Function, save:Function}} dataSource - DataSource/repository pour lecture/écriture board/colonnes (implémente le contrat DataSource)
+ * @property {KanbanState} state - État métier du Kanban (colonnes, tickets, board)
+ * @property {KanbanView|null} view - Vue principale du Kanban (DOM rendering)
+ * @property {TicketService} _ticketService - Service pour la gestion des tickets
+ * @property {ThemeService} theme - Service de thème (couleurs, apparence)
+ * @property {BackgroundService} background - Service de fond d’écran
+ * @property {FilterService|null} filters - Service de filtres (recherche, tri, etc.)
+ * @property {ImportService|null} importer - Service d’import/export JSON
+ * @property {PopupModalAdapter} modal - Adaptateur pour les popups/modals
+ * @property {Object} _factories - Factories injectées pour la création des services
+ */
 import demoFactory from './demoFactory';
 import { DemoDataSourceAdapter } from './datasource/DemoDataSourceAdapter';
 import { LocalStorageStrategy } from './storage/LocalStorageStrategy';
