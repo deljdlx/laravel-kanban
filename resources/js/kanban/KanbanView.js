@@ -1,7 +1,7 @@
 import Sortable from 'sortablejs';
 import TicketCard from './ui/TicketCard';
 import Popup from './ui/Popup';
-import openCreateTicketPopup from './services/Ticket';
+import { TicketService } from './services/Ticket';
 
 /** @typedef {import('./models/KanbanState').default} KanbanState */
 
@@ -16,7 +16,7 @@ export class KanbanView {
    * @param {HTMLElement} root
    * @param {KanbanState} state
    * @param {{ debug?: Function } | null} [logger]
-   * @param {{ modal?: { open: Function } }} [services]
+  * @param {{ modal?: { open: Function }, ticketService?: TicketService }} [services]
    */
   constructor(root, state, logger = null, services = {}) {
     this.root = root;
@@ -25,7 +25,10 @@ export class KanbanView {
     this.logger = logger;
     this.popup = new Popup();
     // Injected services (DI): modal is optional; fallback remains this.popup for compatibility
-    this.services = { modal: services?.modal || null };
+    this.services = {
+      modal: services?.modal || null,
+      ticketService: services?.ticketService || null
+    };
     this.render();
   }
 
@@ -95,9 +98,14 @@ export class KanbanView {
       });
       this.sortables.set(col.id, sortable);
 
-      section.querySelector('[data-add]')?.addEventListener('click', async () => {
-        openCreateTicketPopup({ view: this, state: this.state, logger: this.logger, columnId: col.id });
-      });
+      // Instancie le service une seule fois par vue
+      const ticketService = this.services.ticketService;
+      if (ticketService) {
+        ticketService.view = this;
+        section.querySelector('[data-add]')?.addEventListener('click', async () => {
+          ticketService.openCreateTicketPopup(col.id);
+        });
+      }
     }
   }
   updateCounts() {

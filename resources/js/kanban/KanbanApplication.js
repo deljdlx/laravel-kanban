@@ -4,7 +4,7 @@ import { DemoDataSourceAdapter } from './datasource/DemoDataSourceAdapter';
 import { LocalStorageStrategy } from './storage/LocalStorageStrategy';
 import createLoggerOrig from './utils/createLogger';
 import { KanbanView } from './KanbanView';
-import openCreateTicketPopup from './services/Ticket';
+import { TicketService } from './services/Ticket';
 import ThemeService from './services/ThemeService';
 import BackgroundService from './services/BackgroundService';
 import FilterService from './services/FilterService';
@@ -23,6 +23,7 @@ export default class KanbanApplication {
 	 * @param {Function} [options.createFilterService] - Factory pour le service de filtres (recherche, tri, etc.)
 	 * @param {Function} [options.createImportService] - Factory pour le service d’import/export JSON
 	 * @param {Function} [options.createModal] - Factory pour le composant modal/popup (UI)
+	 * @param {Function|TicketService} [options.createTicketService] - Factory ou instance pour le service de tickets
 	 */
 	constructor({
 		root,
@@ -34,6 +35,7 @@ export default class KanbanApplication {
 		createFilterService = (state, storage, view, logger) => new FilterService(state, storage, view, logger),
 		createImportService = (view, cb) => new ImportService(view, cb),
 		createModal = () => new PopupModalAdapter(),
+		createTicketService = null,
 	}) {
 
 		this.root = root;
@@ -41,7 +43,11 @@ export default class KanbanApplication {
 		this.storage = createStorage();
 		this.dataSource = createDataSource(this.logger, this.storage);
 		this.state = new KanbanState(this.dataSource, { logger: this.logger });
-		this.view = null;
+			this.view = null;
+			// TicketService DI
+			this._ticketService = typeof createTicketService === 'function'
+				? createTicketService({ view: null, state: this.state, logger: this.logger })
+				: (createTicketService || null);
 		this.theme = createThemeService(this.storage);
 		this.background = createBackgroundService(this.storage);
 		this.filters = null;
@@ -54,7 +60,14 @@ export default class KanbanApplication {
 	async init() {
 		if (!this.root) return;
 		await this.state.load();
-		this.view = new KanbanView(this.root, this.state, this.logger, { modal: this.modal });
+			this.view = new KanbanView(this.root, this.state, this.logger, {
+				modal: this.modal,
+				ticketService: this._ticketService
+			});
+			// Si le service ticket a besoin de la vue, on la renseigne maintenant
+			if (this._ticketService && !this._ticketService.view) {
+				this._ticketService.view = this.view;
+			}
 		this.renderTitle();
 
 		// Initialize services
@@ -132,7 +145,10 @@ export default class KanbanApplication {
 
 	// =============== Toolbar ===============
 	bindToolbar() {
-		document.getElementById('createTicket')?.addEventListener('click', () => openCreateTicketPopup({ view: this.view, state: this.state, logger: this.logger }));
+			// Instancie le service une seule fois
+				if (this._ticketService) {
+					document.getElementById('createTicket')?.addEventListener('click', () => this._ticketService.openCreateTicketPopup());
+				}
 		document.getElementById('addRandom')?.addEventListener('click', () => this.addRandom());
 		document.getElementById('resetBoard')?.addEventListener('click', () => this.resetBoard());
 		document.getElementById('downloadJson')?.addEventListener('click', () => this.downloadJson());
