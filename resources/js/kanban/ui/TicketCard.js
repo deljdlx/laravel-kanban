@@ -121,7 +121,19 @@ class TicketCard {
     const modal = this?.opts?.modal;
     const buildContent = () => {
       const authors = Array.isArray(this?.opts?.authors) ? this.opts.authors : (Array.isArray(this.state.board?.authors) ? this.state.board.authors : []);
-      const node = buildTicketDetails({ ticket: data, getTaxonomyMeta: (k) => this.getTaxonomyMeta(k), authors });
+      // Tabs container
+      const tabs = document.createElement('div');
+      tabs.className = 'kanban-popup-tabs';
+      tabs.innerHTML = `
+        <div class="tab-header" style="display:flex; gap:8px; margin-bottom:8px;">
+          <button type="button" class="btn btn-light tab-btn" data-tab="info">Infos</button>
+          <button type="button" class="btn btn-light tab-btn" data-tab="comments">Commentaires</button>
+        </div>
+        <div class="tab-content" data-tab-content="info"></div>
+        <div class="tab-content" data-tab-content="comments" style="display:none;"></div>
+      `;
+      // Info tab content
+      const infoNode = buildTicketDetails({ ticket: data, getTaxonomyMeta: (k) => this.getTaxonomyMeta(k), authors });
       const actions = document.createElement('div');
       actions.className = 'tf-actions';
       actions.style.marginTop = '8px';
@@ -129,18 +141,38 @@ class TicketCard {
         <button type="button" class="btn btn-primary" data-edit>Éditer</button>
         <button type="button" class="btn btn-danger" data-delete>Supprimer</button>
       `;
-      node.appendChild(actions);
+      infoNode.appendChild(actions);
+      tabs.querySelector('[data-tab-content="info"]').appendChild(infoNode);
+      // Comments tab content (simple text for now)
+      const commentsNode = document.createElement('div');
+      commentsNode.innerHTML = `<div style="padding:8px; color:#888;">Aucun commentaire pour le moment.</div>`;
+      tabs.querySelector('[data-tab-content="comments"]').appendChild(commentsNode);
+      // Tab switching logic
+      const btns = tabs.querySelectorAll('.tab-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          btns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const tab = btn.getAttribute('data-tab');
+          tabs.querySelectorAll('.tab-content').forEach(tc => {
+            tc.style.display = tc.getAttribute('data-tab-content') === tab ? '' : 'none';
+          });
+        });
+      });
+      // Default active tab
+      btns[0].classList.add('active');
+      // Actions listeners
       setTimeout(() => {
-        node.querySelector('[data-edit]')?.addEventListener('click', (e) => {
+        infoNode.querySelector('[data-edit]')?.addEventListener('click', (e) => {
           e.stopPropagation();
           this.openEditPopup?.(el, data);
         });
-        node.querySelector('[data-delete]')?.addEventListener('click', (e) => {
+        infoNode.querySelector('[data-delete]')?.addEventListener('click', (e) => {
           e.stopPropagation();
           this.openDeleteConfirm(el);
         });
       });
-      return node;
+      return tabs;
     };
 
     if (modal && typeof modal.open === 'function') {
