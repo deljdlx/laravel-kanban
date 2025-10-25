@@ -33,7 +33,10 @@ export default class TablerModal {
     modalEl.innerHTML = `
       <div class="modal-dialog">
         <div class="modal-content">
-          ${title ? `<div class="modal-header"><h5 class="modal-title">${title}</h5></div>` : ''}
+          <div class="modal-header">
+            ${title ? `<h5 class="modal-title">${title}</h5>` : ''}
+            <button type="button" class="btn-close" aria-label="Fermer"></button>
+          </div>
           <div class="modal-body"></div>
           <div class="modal-footer"></div>
         </div>
@@ -62,13 +65,17 @@ export default class TablerModal {
         footer.appendChild(b);
       }
     }
+    // Bouton de fermeture natif
+    const closeBtn = modalEl.querySelector('.btn-close');
+    if (closeBtn) closeBtn.addEventListener('click', () => this.close());
+    // Gestion touche Escape
+    this._escHandler = (e) => { if (e.key === 'Escape') this.close(); };
+    document.addEventListener('keydown', this._escHandler);
     // Instancie Tabler Modal
     this.modal = window.Tabler?.Modal ? new window.Tabler.Modal(modalEl) : null;
     if (this.modal) {
       this.modal.show();
-      modalEl.addEventListener('hidden.bs.modal', () => {
-        this.close();
-      });
+      // Tabler ne déclenche pas 'hidden.bs.modal', donc on ferme via API ou bouton
     } else {
       modalEl.style.display = 'block';
     }
@@ -79,6 +86,7 @@ export default class TablerModal {
       this.modal.hide();
       this.modal = null;
     }
+    document.removeEventListener('keydown', this._escHandler);
     // Supprime le DOM
     const modals = document.querySelectorAll('.modal');
     for (const m of modals) m.remove();
