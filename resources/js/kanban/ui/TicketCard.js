@@ -143,10 +143,54 @@ class TicketCard {
       `;
       infoNode.appendChild(actions);
       tabs.querySelector('[data-tab-content="info"]').appendChild(infoNode);
-      // Comments tab content (simple text for now)
+      // Comments tab content (affiche les vrais commentaires + formulaire)
       const commentsNode = document.createElement('div');
-      commentsNode.innerHTML = `<div style="padding:8px; color:#888;">Aucun commentaire pour le moment.</div>`;
-      tabs.querySelector('[data-tab-content="comments"]').appendChild(commentsNode);
+      commentsNode.className = 'kanban-comments-list';
+      const comments = Array.isArray(data.comments) ? data.comments : [];
+      const renderComments = () => {
+        if (comments.length === 0) {
+          commentsNode.innerHTML = `<div style="padding:8px; color:#888;">Aucun commentaire pour le moment.</div>`;
+        } else {
+          commentsNode.innerHTML = comments.map(c => `
+            <div class="kanban-comment" style="border-bottom:1px solid #eee; padding:8px 0;">
+              <div style="font-size:13px; color:#555; margin-bottom:2px;">
+                <span style="font-weight:bold;">${escapeHtml(c.author || 'Anonyme')}</span>
+                <span style="color:#aaa; font-size:12px; margin-left:8px;">${new Date(c.createdAt).toLocaleString()}</span>
+              </div>
+              <div style="font-size:14px;">${escapeHtml(c.text)}</div>
+            </div>
+          `).join('');
+        }
+      };
+      renderComments();
+
+      // Formulaire d’ajout de commentaire
+      const form = document.createElement('form');
+      form.className = 'kanban-comment-form';
+      form.innerHTML = `
+        <textarea name="comment" rows="2" style="width:100%;margin-bottom:6px;resize:vertical;" placeholder="Ajouter un commentaire..."></textarea>
+        <div style="display:flex;justify-content:flex-end;gap:8px;">
+          <button type="submit" class="btn btn-primary">Envoyer</button>
+        </div>
+      `;
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const textarea = form.querySelector('textarea[name="comment"]');
+        const text = textarea.value.trim();
+        if (!text) return;
+        // Crée un commentaire (utilise le modèle Commentaire si dispo)
+        let Commentaire = null;
+        try { Commentaire = require('../models/Commentaire').default; } catch { Commentaire = window.Commentaire; }
+        const author = (Array.isArray(authors) && authors[0]?.name) ? authors[0].name : 'Anonyme';
+        const authorId = (Array.isArray(authors) && authors[0]?.id) ? authors[0].id : null;
+        const commentaire = Commentaire ? new Commentaire(text, { ticketId: data.id, author, authorId }) : { text, author, authorId, ticketId: data.id, createdAt: Date.now() };
+        comments.push(commentaire);
+        textarea.value = '';
+        renderComments();
+      });
+      const commentsTab = tabs.querySelector('[data-tab-content="comments"]');
+      commentsTab.appendChild(commentsNode);
+      commentsTab.appendChild(form);
       // Tab switching logic
       const btns = tabs.querySelectorAll('.tab-btn');
       btns.forEach(btn => {
