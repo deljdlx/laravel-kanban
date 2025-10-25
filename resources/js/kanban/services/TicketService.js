@@ -1,5 +1,6 @@
 
 import { TicketForm } from '../ui/TicketForm.js';
+import KanbanState from '../models/KanbanState.js';
 
 /**
  * TicketService
@@ -9,7 +10,7 @@ export class TicketService {
   /**
    * @param {Object} deps
    * @param {any} deps.view - Vue Kanban (UI)
-   * @param {any} deps.state - État Kanban
+   * @param {KanbanState} deps.state - État Kanban
    * @param {any} [deps.logger] - Logger/debug
    */
   constructor({ view, state, logger }) {

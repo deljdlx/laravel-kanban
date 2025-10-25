@@ -91,11 +91,11 @@ export default class TablerModal {
       this.modal = null;
     }
     document.removeEventListener('keydown', this._escHandler);
-  // Supprime le DOM et l'overlay
-  const modals = document.querySelectorAll('.modal');
-  for (const m of modals) m.remove();
-  const backdrops = document.querySelectorAll('.modal-backdrop');
-  for (const b of backdrops) b.remove();
+    // Supprime le DOM et l'overlay
+    const modals = document.querySelectorAll('.modal');
+    for (const m of modals) m.remove();
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    for (const b of backdrops) b.remove();
     if (typeof this.onClose === 'function') this.onClose();
     this.onClose = null;
   }

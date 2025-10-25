@@ -184,9 +184,19 @@ class TicketCard {
         const author = (Array.isArray(authors) && authors[0]?.name) ? authors[0].name : 'Anonyme';
         const authorId = (Array.isArray(authors) && authors[0]?.id) ? authors[0].id : null;
         const commentaire = Commentaire ? new Commentaire(text, { ticketId: data.id, author, authorId }) : { text, author, authorId, ticketId: data.id, createdAt: Date.now() };
-        comments.push(commentaire);
+        // Ajoute le commentaire à l’instance Ticket
+        if (typeof data.addComment === 'function') {
+          data.addComment(commentaire);
+        } else {
+          if (!Array.isArray(data.comments)) data.comments = [];
+          data.comments.push(commentaire);
+        }
         textarea.value = '';
         renderComments();
+        // Persiste le state après ajout du commentaire
+        if (this.state && typeof this.state.updateTicket === 'function') {
+          this.state.updateTicket(data.id, { comments: data.comments });
+        }
       });
       const commentsTab = tabs.querySelector('[data-tab-content="comments"]');
       commentsTab.appendChild(commentsNode);

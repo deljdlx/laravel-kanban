@@ -77,8 +77,8 @@ class KanbanState {
         this.columns = [];
         this.board = defaultBoardFromAllowed();
         this.logger = options.logger;
-    this._taxonomies = new Taxonomies(this.board.taxonomies);
-    this._authors = new Users(this.board.authors);
+        this._taxonomies = new Taxonomies(this.board.taxonomies);
+        this._authors = new Users(this.board.authors);
 
         // Default persistence calls the data source; can be overridden via options or setPersist()
         this.#persistHandler = options.persist || (async (columns) => {
@@ -127,14 +127,14 @@ class KanbanState {
             const arr = Array.isArray(v?.options) ? v.options : [];
             tx[k] = { label: v?.label || k, options: arr };
         }
-    this.board = {
+        this.board = {
             name: (typeof board?.name === 'string' && board.name.trim()) ? board.name.trim() : undefined,
             backgroundImage: (typeof board?.backgroundImage === 'string' && board.backgroundImage) ? board.backgroundImage : undefined,
             taxonomies: tx,
             authors: Array.isArray(board?.authors) ? board.authors : [],
         };
-    this._taxonomies = new Taxonomies(this.board.taxonomies);
-    this._authors = new Users(this.board.authors);
+        this._taxonomies = new Taxonomies(this.board.taxonomies);
+        this._authors = new Users(this.board.authors);
     }
 
     async loadColumns() {
@@ -146,7 +146,7 @@ class KanbanState {
         }
         const meta = await (this.dataSource.getColumnsMeta?.() ?? this.dataSource.getColumns());
         // normalize to Column[] with empty tickets
-    this.columns = meta.map(c => new Column(c.id, c.name, []));
+        this.columns = meta.map(c => new Column(c.id, c.name, []));
     }
 
     async loadTickets(columnId) {
@@ -198,6 +198,9 @@ class KanbanState {
         });
     }
 
+
+
+
     /** @private */
     #findTicket(ticketId) {
         for (const col of this.columns) {
@@ -243,7 +246,7 @@ class KanbanState {
         const col = this.columns.find(c => c.id === columnId);
         if (!col) return;
         const allowed = this.getAllowedMap();
-    const toAdd = ticket && ticket.id ? ticket : new Ticket(ticket?.title ?? '', { ...(ticket || {}), taxonomies: sanitizeTaxonomies(ticket?.taxonomies || legacyToTaxonomies(ticket || {}, allowed), allowed) });
+        const toAdd = ticket && ticket.id ? ticket : new Ticket(ticket?.title ?? '', { ...(ticket || {}), taxonomies: sanitizeTaxonomies(ticket?.taxonomies || legacyToTaxonomies(ticket || {}, allowed), allowed) });
         col.tickets.unshift(toAdd);
         await this.persist({ op: 'addTicket', columnId, ticket: (typeof toAdd.toJSON === 'function' ? toAdd.toJSON() : toAdd) });
     }
@@ -254,14 +257,14 @@ class KanbanState {
      * @param {Object} data - Données à appliquer au ticket
      * @returns {Promise<void>}
      */
-        async updateTicket(id, data) {
-            const found = this.#findTicket(id);
-            if (!found) throw new Error('Ticket non trouvé: ' + id);
-            // Conserve l’instance Ticket pour garantir toJSON
-            const updated = new Ticket(found.ticket.title, { ...found.ticket, ...data });
-            found.col.tickets[found.idx] = updated;
-            await this.persist({ op: 'updateTicket', ticketId: id, columnId: found.col.id, ticket: updated });
-        }
+    async updateTicket(id, data) {
+        const found = this.#findTicket(id);
+        if (!found) throw new Error('Ticket non trouvé: ' + id);
+        // Conserve l’instance Ticket pour garantir toJSON
+        const updated = new Ticket(found.ticket.title, { ...found.ticket, ...data });
+        found.col.tickets[found.idx] = updated;
+        await this.persist({ op: 'updateTicket', ticketId: id, columnId: found.col.id, ticket: updated });
+    }
 
     async reset(newData) {
         // newData can be columns[] or { board, columns }
