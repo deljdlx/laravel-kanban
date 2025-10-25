@@ -5,77 +5,83 @@
  *  popup.open({ title: 'Details', content: nodeOrHtmlOrFn, onClose: () => {} });
  */
 
-import escapeHtml from '../utils/escapeHtml';
 
-export default class Popup {
-  constructor() {
-    this.overlay = null;
-    this.container = null;
-    this.onClose = null;
-    this._escHandler = (e) => { if (e.key === 'Escape') this.close(); };
-  }
+// Wrapper autour du composant Modal de Tabler
+// Nécessite Tabler Modal (https://tabler.io/docs/modal/)
 
-  open({ title = '', content, closeOnBackdrop = true, onClose = null } = {}) {
-    if (this.overlay) this.close();
+export default class TablerModal {
+  /** @type {import('tabler-ui').Modal|null} */
+  modal = null;
+  /** @type {Function|null} */
+  onClose = null;
+
+  /**
+   * Ouvre la modal Tabler avec le contenu donné
+   * @param {Object} options
+   * @param {string|HTMLElement|Function} options.content
+   * @param {string} [options.title]
+   * @param {Function} [options.onClose]
+   * @param {Array<{label:string, onClick:Function, className?:string}>} [options.buttons]
+   */
+  open({ content, title = '', onClose = null, buttons = [] } = {}) {
+    this.close();
     this.onClose = onClose;
-
-    const overlay = document.createElement('div');
-    overlay.className = 'modal-overlay';
-    overlay.setAttribute('role', 'presentation');
-
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-
-    const header = document.createElement('div');
-    header.className = 'modal-header';
-    const h = document.createElement('div');
-    h.className = 'modal-title';
-    h.textContent = String(title || '');
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'modal-close';
-    closeBtn.setAttribute('aria-label', 'Fermer');
-    closeBtn.textContent = '×';
-    closeBtn.addEventListener('click', () => this.close());
-    header.appendChild(h);
-    header.appendChild(closeBtn);
-
-    const body = document.createElement('div');
-    body.className = 'modal-body';
-    if (typeof content === 'function') {
-      const node = content();
-      if (node instanceof HTMLElement) body.appendChild(node); else body.innerHTML = String(node ?? '');
-    } else if (content instanceof HTMLElement) {
-      body.appendChild(content);
-    } else if (content != null) {
-      body.innerHTML = String(content);
+    // Crée le DOM de la modal Tabler
+    const modalEl = document.createElement('div');
+    modalEl.className = 'modal';
+    modalEl.tabIndex = -1;
+    modalEl.innerHTML = `
+      <div class="modal-dialog">
+        <div class="modal-content">
+          ${title ? `<div class="modal-header"><h5 class="modal-title">${title}</h5></div>` : ''}
+          <div class="modal-body"></div>
+          <div class="modal-footer"></div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modalEl);
+    // Injecte le contenu
+    const body = modalEl.querySelector('.modal-body');
+    let node = content;
+    if (typeof content === 'function') node = content();
+    if (typeof node === 'string') body.innerHTML = node;
+    else if (node instanceof HTMLElement) body.appendChild(node);
+    // Boutons
+    const footer = modalEl.querySelector('.modal-footer');
+    if (Array.isArray(buttons)) {
+      for (const btn of buttons) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'btn ' + (btn.className || 'btn-primary');
+        b.textContent = btn.label;
+        b.onclick = () => {
+          if (typeof btn.onClick === 'function') btn.onClick();
+          this.close();
+        };
+        footer.appendChild(b);
+      }
     }
-
-    modal.appendChild(header);
-    modal.appendChild(body);
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-
-    this.overlay = overlay;
-    this.container = modal;
-
-    if (closeOnBackdrop) {
-      overlay.addEventListener('click', (e) => { if (e.target === overlay) this.close(); });
+    // Instancie Tabler Modal
+    this.modal = window.Tabler?.Modal ? new window.Tabler.Modal(modalEl) : null;
+    if (this.modal) {
+      this.modal.show();
+      modalEl.addEventListener('hidden.bs.modal', () => {
+        this.close();
+      });
+    } else {
+      modalEl.style.display = 'block';
     }
-    document.addEventListener('keydown', this._escHandler);
-
-    // focus handling
-    closeBtn.focus({ preventScroll: true });
   }
 
   close() {
-    if (!this.overlay) return;
-    document.removeEventListener('keydown', this._escHandler);
-    this.overlay.remove();
-    this.overlay = null;
-    this.container = null;
-    try { this.onClose?.(); } catch {}
+    if (this.modal) {
+      this.modal.hide();
+      this.modal = null;
+    }
+    // Supprime le DOM
+    const modals = document.querySelectorAll('.modal');
+    for (const m of modals) m.remove();
+    if (typeof this.onClose === 'function') this.onClose();
     this.onClose = null;
   }
 }
