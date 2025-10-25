@@ -84,23 +84,35 @@ class Ticket {
     }
     /** @returns {TicketDTO} */
     toJSON() {
-    const base = { id: this.id, title: this.title, description: this.description, author: this.author, authorId: this.authorId, createdAt: this.createdAt };
-    // Prefer taxonomies bag; fall back to legacy shim if needed
-    const tx = this.taxonomies || { label: this.label ?? null, category: this.category ?? null, complexity: this.complexity ?? null };
-    const comments = Array.isArray(this.comments) ? this.comments.map(c => (typeof c.toJSON === 'function' ? c.toJSON() : c)) : [];
-    return { ...base, taxonomies: tx, comments };
+        const base = { id: this.id, title: this.title, description: this.description, author: this.author, authorId: this.authorId, createdAt: this.createdAt };
+        // Prefer taxonomies bag; fall back to legacy shim if needed
+        const tx = this.taxonomies || { label: this.label ?? null, category: this.category ?? null, complexity: this.complexity ?? null };
+        const comments = Array.isArray(this.comments) ? this.comments.map(c => (typeof c.toJSON === 'function' ? c.toJSON() : c)) : [];
+        return { ...base, taxonomies: tx, comments };
     }
+
+
     /** @param {TicketDTO & {taxonomies?: Record<string,string|null>}} dto */
     static fromJSON(dto) {
-                // Build taxonomies from explicit bag or legacy fields
-                const taxonomies = dto.taxonomies ? { ...dto.taxonomies } : undefined;
-                const ticket = new Ticket(dto.title, { ...dto, taxonomies });
-                if (Array.isArray(dto.comments)) {
-                    // eslint-disable-next-line global-require
-                    const Commentaire = require('./Commentaire').default;
-                    ticket.comments = dto.comments.map(c => Commentaire.fromJSON ? Commentaire.fromJSON(c) : c);
-                }
-                return ticket;
+        // Build taxonomies from explicit bag or legacy fields
+        const taxonomies = dto.taxonomies ? { ...dto.taxonomies } : undefined;
+        const ticket = new Ticket(dto.title, { ...dto, taxonomies });
+
+        console.group('%cTicket.js :: 101 =============================', 'color: #471542; font-size: 1rem');
+        console.log(dto);
+        console.groupEnd();
+
+        if (Array.isArray(dto.comments)) {
+            // eslint-disable-next-line global-require
+            const Commentaire = require('./Commentaire').default;
+
+            console.group('%cTicket.js :: 104 =============================', 'color: #196839; font-size: 1rem');
+            console.log(Commentaire);
+            console.groupEnd();
+
+            ticket.comments = dto.comments.map(c => Commentaire.fromJSON ? Commentaire.fromJSON(c) : c);
+        }
+        return ticket;
     }
 }
 

@@ -29,7 +29,10 @@ class Column {
     /** @returns {ColumnDTO} */
     toJSON() { return { id: this.id, name: this.name, tickets: this.tickets.map(t => t.toJSON()) }; }
     /** @param {ColumnDTO} dto */
-    static fromJSON(dto) { return new Column(dto.id, dto.name, (dto.tickets||[]).map(Ticket.fromJSON)); }
+    static fromJSON(dto) {
+        // Utilise Ticket.fromJSON pour chaque ticket, ce qui réhydrate les commentaires
+        return new Column(dto.id, dto.name, Array.isArray(dto.tickets) ? dto.tickets.map(Ticket.fromJSON) : []);
+    }
 }
 
 export default Column;
