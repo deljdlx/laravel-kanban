@@ -1,7 +1,7 @@
 import KanbanState from './models/KanbanState';
 import demoFactory from './demoFactory';
-import { DemoDataSourceAdapter as DemoDataSource } from './datasource/DataSourceAdapter';
-import { createDefaultStorage } from './storage/StorageStrategy';
+import { DemoDataSourceAdapter } from './datasource/DemoDataSourceAdapter';
+import { LocalStorageStrategy } from './storage/LocalStorageStrategy';
 import createLoggerOrig from './utils/createLogger';
 import { KanbanView } from './KanbanView';
 import openCreateTicketPopup from './ui/createTicket';
@@ -14,21 +14,21 @@ import PopupModalAdapter from './ui/adapters/PopupModalAdapter';
 export default class KanbanApplication {
 	/**
 	 * @param {Object} options
-	 * @param {HTMLElement} options.root
-	 * @param {Function} [options.createLogger]
-	 * @param {Function} [options.createStorage]
-	 * @param {Function} [options.createDataSource]
-	 * @param {Function} [options.createThemeService]
-	 * @param {Function} [options.createBackgroundService]
-	 * @param {Function} [options.createFilterService]
-	 * @param {Function} [options.createImportService]
-	 * @param {Function} [options.createModal]
+	 * @param {HTMLElement} options.root - Élément racine du Kanban (container DOM)
+	 * @param {Function} [options.createLogger] - Factory pour le logger (journalisation/debug)
+	 * @param {Function} [options.createStorage] - Factory pour le stockage local (localStorage, mémoire, etc.)
+	 * @param {Function} [options.createDataSource] - Factory pour le repository/datasource (lecture/écriture board/colonnes)
+	 * @param {Function} [options.createThemeService] - Factory pour le service de thème (couleurs, apparence)
+	 * @param {Function} [options.createBackgroundService] - Factory pour le service de fond d’écran (image, couleur)
+	 * @param {Function} [options.createFilterService] - Factory pour le service de filtres (recherche, tri, etc.)
+	 * @param {Function} [options.createImportService] - Factory pour le service d’import/export JSON
+	 * @param {Function} [options.createModal] - Factory pour le composant modal/popup (UI)
 	 */
 	constructor({
 		root,
 		createLogger = () => createLoggerOrig('Kanban'),
-		createStorage = () => createDefaultStorage(),
-		createDataSource = (logger, storage) => new DemoDataSource(demoFactory, 'demo.kanban.v6', logger, storage),
+		createStorage = () => () => new LocalStorageStrategy(),
+		createDataSource = (logger, storage) => new DemoDataSourceAdapter(demoFactory, 'demo.kanban.v6', logger, storage),
 		createThemeService = (storage) => new ThemeService(storage),
 		createBackgroundService = (storage) => new BackgroundService(storage),
 		createFilterService = (state, storage, view, logger) => new FilterService(state, storage, view, logger),
