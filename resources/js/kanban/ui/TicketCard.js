@@ -123,10 +123,20 @@ class TicketCard {
       const actions = document.createElement('div');
       actions.className = 'tf-actions';
       actions.style.marginTop = '8px';
-      actions.innerHTML = '<button type="button" class="btn btn-danger" data-delete>Supprimer</button>';
+      actions.innerHTML = `
+        <button type="button" class="btn btn-primary" data-edit>Éditer</button>
+        <button type="button" class="btn btn-danger" data-delete>Supprimer</button>
+      `;
       node.appendChild(actions);
       setTimeout(() => {
-        node.querySelector('[data-delete]')?.addEventListener('click', (e) => { e.stopPropagation(); this.openDeleteConfirm(el); });
+        node.querySelector('[data-edit]')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.openEditPopup?.(el, data);
+        });
+        node.querySelector('[data-delete]')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.openDeleteConfirm(el);
+        });
       });
       return node;
     };
