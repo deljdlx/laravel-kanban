@@ -153,6 +153,13 @@ class TicketCard {
     });
   }
 
+  openEditPopup(el, data) {
+    // Delegated to board/view level to have access to TicketService and state
+    console.group('%cTicketCard.js :: 158 =============================', 'color: #317418; font-size: 1rem');
+    console.log('Edit ticket requested:', data);
+    console.groupEnd();
+  }
+
   openDeleteConfirm(el) {
     const id = this.ticket.id;
     const title = this.ticket.title;

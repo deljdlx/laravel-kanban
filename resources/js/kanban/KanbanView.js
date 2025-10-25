@@ -115,7 +115,6 @@ export class KanbanView {
       let visible = 0;
       const cards = list.querySelectorAll('.card');
       for (const card of cards) {
-        // Count only visible cards (filtered ones hidden via display:none won't have offsetParent)
         if (card.offsetParent !== null) visible++;
       }
       el.querySelector('.count').textContent = String(visible);
