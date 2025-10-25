@@ -155,17 +155,20 @@ class KanbanState {
         const col = this.columns.find(c => c.id === columnId);
         if (!col) return;
         const tickets = await (this.dataSource.getTicketsByColumnId?.(columnId));
+
         if (Array.isArray(tickets)) {
             col.tickets = tickets.map(t => {
+                // Utilise Ticket.fromJSON pour garantir la structure et les commentaires
                 const allowed = this.getAllowedMap();
                 const tx = t.taxonomies ? sanitizeTaxonomies(t.taxonomies, allowed) : legacyToTaxonomies(t, allowed);
-                return new Ticket(t.title, { ...t, taxonomies: tx });
+                return Ticket.fromJSON({ ...t, taxonomies: tx });
             });
         }
     }
 
     async loadAll() {
         this.logger?.debug?.('state.loadAll()');
+
         // If dataSource supports meta + per-column tickets, use it; else fallback to full snapshot
         if (this.dataSource.getColumnsMeta && this.dataSource.getTicketsByColumnId) {
             await this.loadColumns();

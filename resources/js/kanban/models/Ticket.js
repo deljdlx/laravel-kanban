@@ -1,3 +1,5 @@
+import Commentaire from './Commentaire.js';
+
 /**
  * @typedef {Object} TicketDTO
  * @property {string} id
@@ -97,19 +99,7 @@ class Ticket {
         // Build taxonomies from explicit bag or legacy fields
         const taxonomies = dto.taxonomies ? { ...dto.taxonomies } : undefined;
         const ticket = new Ticket(dto.title, { ...dto, taxonomies });
-
-        console.group('%cTicket.js :: 101 =============================', 'color: #471542; font-size: 1rem');
-        console.log(dto);
-        console.groupEnd();
-
         if (Array.isArray(dto.comments)) {
-            // eslint-disable-next-line global-require
-            const Commentaire = require('./Commentaire').default;
-
-            console.group('%cTicket.js :: 104 =============================', 'color: #196839; font-size: 1rem');
-            console.log(Commentaire);
-            console.groupEnd();
-
             ticket.comments = dto.comments.map(c => Commentaire.fromJSON ? Commentaire.fromJSON(c) : c);
         }
         return ticket;
