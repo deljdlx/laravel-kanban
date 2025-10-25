@@ -43,6 +43,10 @@ export default class TablerModal {
       </div>
     `;
 
+    // Ajoute l'overlay
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop show';
+    document.body.appendChild(backdrop);
     document.body.appendChild(modalEl);
     // Injecte le contenu
     const body = modalEl.querySelector('.modal-body');
@@ -87,9 +91,11 @@ export default class TablerModal {
       this.modal = null;
     }
     document.removeEventListener('keydown', this._escHandler);
-    // Supprime le DOM
-    const modals = document.querySelectorAll('.modal');
-    for (const m of modals) m.remove();
+  // Supprime le DOM et l'overlay
+  const modals = document.querySelectorAll('.modal');
+  for (const m of modals) m.remove();
+  const backdrops = document.querySelectorAll('.modal-backdrop');
+  for (const b of backdrops) b.remove();
     if (typeof this.onClose === 'function') this.onClose();
     this.onClose = null;
   }
