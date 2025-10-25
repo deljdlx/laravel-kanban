@@ -10,6 +10,8 @@ import { sanitizeTaxonomies, legacyToTaxonomies } from '../utils/taxonomies';
 import { renderTaxonomyChip } from './components/TaxonomyChip';
 import { buildTicketDetails } from './components/TicketDetails';
 
+import { TicketForm } from './TicketForm.js';
+
 /** @typedef {import('../KanbanView').KanbanView} KanbanView */
 /** @typedef {import('../models/KanbanState').default} KanbanState */
 
@@ -153,11 +155,53 @@ class TicketCard {
     });
   }
 
-  openEditPopup(el, data) {
-    // Delegated to board/view level to have access to TicketService and state
-    console.group('%cTicketCard.js :: 158 =============================', 'color: #317418; font-size: 1rem');
-    console.log('Edit ticket requested:', data);
-    console.groupEnd();
+  /**
+   * Ouvre le popup d’édition du ticket et gère la mise à jour
+   * @param {HTMLElement} el - Élément DOM de la carte
+   * @param {Object} ticket - Données du ticket à éditer
+   */
+  openEditPopup(el, ticket) {
+    // Utilise le service TicketService injecté via la vue
+    const ticketService = this.board?.services?.ticketService;
+    if (ticketService && typeof ticketService.openEditTicketPopup === 'function') {
+      ticketService.openEditTicketPopup(ticket, el);
+      return;
+    }
+    // Fallback : popup simple avec formulaire d’édition
+    // const TicketForm = window.TicketForm || window.NewTicketForm;
+    // if (!TicketForm) {
+    //   console.error('TicketForm ou NewTicketForm n’est pas disponible dans window.');
+    //   return;
+    // }
+
+    const form = TicketForm({
+      getOptions: (k) => this.state.getTaxonomyOptions(k),
+      getKeys: () => this.state.getTaxonomyKeys(),
+      getMeta: (k) => this.state.getTaxonomyMeta(k),
+      getAuthors: () => Array.isArray(this.state.board?.authors) ? this.state.board.authors : [],
+      ticket,
+      mode: 'edit'
+    });
+    const onSubmit = async (e) => {
+      e.preventDefault();
+      if (!form.el.checkValidity?.() && form.el.reportValidity) {
+        form.el.reportValidity();
+        return;
+      }
+      const data = form.getData();
+      await this.state.updateTicket(ticket.id, data);
+      const card = this.board.createCardElement({ ...ticket, ...data });
+      el.replaceWith(card);
+      this.board.updateCounts();
+      this.popup.close();
+    };
+    setTimeout(() => {
+      form.el.addEventListener('submit', onSubmit, { once: true });
+    });
+    this.popup.open({
+      title: `Éditer le ticket`,
+      content: () => form.el
+    });
   }
 
   openDeleteConfirm(el) {
