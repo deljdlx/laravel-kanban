@@ -1,5 +1,5 @@
-import { renderTaxonomyChip } from './components/TaxonomyChip';
 import { buildTicketDetails } from './components/TicketDetails';
+import escapeHtml from '../utils/escapeHtml';
 /**
  * TicketPopup: gère l'affichage et les interactions du popup de ticket (détails, commentaires, formulaire, actions)
  */
@@ -43,45 +43,29 @@ export class TicketPopup {
     infoNode.appendChild(actions);
     tabs.querySelector('[data-tab-content="info"]').appendChild(infoNode);
     // Comments tab content
-    const commentsNode = document.createElement('div');
-    commentsNode.className = 'kanban-comments-list';
+    this.commentsNode = document.createElement('div');
+
+
+    this.commentsNode.className = 'kanban-comments-list';
     const comments = Array.isArray(this.data.comments) ? this.data.comments : [];
-    this.renderComments(commentsNode, comments);
+    this.renderComments(comments);
 
     // Formulaire d’ajout de commentaire
-    const form = document.createElement('form');
-    form.className = 'kanban-comment-form';
-    form.innerHTML = `
+    this.commentForm = document.createElement('form');
+    this.commentForm.className = 'kanban-comment-form';
+    this.commentForm.innerHTML = `
       <textarea name="comment" rows="2" style="width:100%;margin-bottom:6px;resize:vertical;" placeholder="Ajouter un commentaire..."></textarea>
       <div style="display:flex;justify-content:flex-end;gap:8px;">
         <button type="submit" class="btn btn-primary">Envoyer</button>
       </div>
     `;
-    form.addEventListener('submit', (e) => {
+    this.commentForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const textarea = form.querySelector('textarea[name="comment"]');
-      const text = textarea.value.trim();
-      if (!text) return;
-      let Commentaire = null;
-      try { Commentaire = require('../models/Commentaire').default; } catch { Commentaire = window.Commentaire; }
-      const author = (Array.isArray(this.authors) && this.authors[0]?.name) ? this.authors[0].name : 'Anonyme';
-      const authorId = (Array.isArray(this.authors) && this.authors[0]?.id) ? this.authors[0].id : null;
-      const commentaire = Commentaire ? new Commentaire(text, { ticketId: this.data.id, author, authorId }) : { text, author, authorId, ticketId: this.data.id, createdAt: Date.now() };
-      if (typeof this.data.addComment === 'function') {
-        this.data.addComment(commentaire);
-      } else {
-        if (!Array.isArray(this.data.comments)) this.data.comments = [];
-        this.data.comments.push(commentaire);
-      }
-      textarea.value = '';
-      this.renderComments(commentsNode, this.data.comments);
-      if (this.state && typeof this.state.updateTicket === 'function') {
-        this.state.updateTicket(this.data.id, { comments: this.data.comments });
-      }
+      this.saveComment();
     });
     const commentsTab = tabs.querySelector('[data-tab-content="comments"]');
-    commentsTab.appendChild(commentsNode);
-    commentsTab.appendChild(form);
+    commentsTab.appendChild(this.commentsNode);
+    commentsTab.appendChild(this.commentForm);
     // Tab switching logic
     const btns = tabs.querySelectorAll('.tab-btn');
     btns.forEach(btn => {
@@ -108,11 +92,33 @@ export class TicketPopup {
     return tabs;
   }
 
-  renderComments(commentsNode, comments) {
+  saveComment() {
+      const textarea = this.commentForm.querySelector('textarea[name="comment"]');
+      const text = textarea.value.trim();
+      if (!text) return;
+      let Commentaire = null;
+      try { Commentaire = require('../models/Commentaire').default; } catch { Commentaire = window.Commentaire; }
+      const author = (Array.isArray(this.authors) && this.authors[0]?.name) ? this.authors[0].name : 'Anonyme';
+      const authorId = (Array.isArray(this.authors) && this.authors[0]?.id) ? this.authors[0].id : null;
+      const commentaire = Commentaire ? new Commentaire(text, { ticketId: this.data.id, author, authorId }) : { text, author, authorId, ticketId: this.data.id, createdAt: Date.now() };
+      if (typeof this.data.addComment === 'function') {
+        this.data.addComment(commentaire);
+      } else {
+        if (!Array.isArray(this.data.comments)) this.data.comments = [];
+        this.data.comments.push(commentaire);
+      }
+      textarea.value = '';
+      this.renderComments(this.data.comments);
+      if (this.state && typeof this.state.updateTicket === 'function') {
+        this.state.updateTicket(this.data.id, { comments: this.data.comments });
+      }
+  }
+
+  renderComments(comments) {
     if (comments.length === 0) {
-      commentsNode.innerHTML = `<div style="padding:8px; color:#888;">Aucun commentaire pour le moment.</div>`;
+      this.commentsNode.innerHTML = `<div style="padding:8px; color:#888;">Aucun commentaire pour le moment.</div>`;
     } else {
-      commentsNode.innerHTML = comments.map(c => `
+      this.commentsNode.innerHTML = comments.map(c => `
         <div class="kanban-comment" style="border-bottom:1px solid #eee; padding:8px 0;">
           <div style="font-size:13px; color:#555; margin-bottom:2px;">
             <span style="font-weight:bold;">${escapeHtml(c.author || 'Anonyme')}</span>
