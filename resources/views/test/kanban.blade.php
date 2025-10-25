@@ -7,6 +7,10 @@
 </head>
 <body>
 <div class="wrap">
+
+
+
+
     <div class="toolbar">
     <h1 class="title" id="kanban-title">Kanban</h1>
     <button id="kanban-title-warn" type="button" class="btn" style="margin-left:8px; display:none;"></button>
@@ -22,6 +26,9 @@
     <div id="kanban-filters" class="filters"></div>
     <div id="kanban" class="board"></div>
     <p class="credits">JS POO + SortableJS. Aucun backend; données en mémoire/localStorage.</p>
+   
+
+
 </div>
 
 @vite('resources/js/kanban/index.js')

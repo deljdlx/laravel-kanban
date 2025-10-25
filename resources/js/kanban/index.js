@@ -1,7 +1,13 @@
 import '../bootstrap';
+
+
+
+
 import '../../css/kanban.css';
 import KanbanApplication from './KanbanApplication';
 import { MouseFX } from './ui/ParticlesFX';
+
+
 
 (async function bootstrap() {
 
