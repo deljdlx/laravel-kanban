@@ -263,10 +263,9 @@ class KanbanState {
         // Conserve l’instance Ticket pour garantir toJSON
         const updated = new Ticket(found.ticket.title, { ...found.ticket, ...data });
 
-        console.group('%cKanbanState.js :: 266 =============================', 'color: #f12897; font-size: 1rem');
-        console.log(data);
-        console.log(updated);
-        console.groupEnd();
+        if(Array.isArray(data.comments)) {
+            updated.comments = data.comments;
+        }
 
         found.col.tickets[found.idx] = updated;
         await this.persist({ op: 'updateTicket', ticketId: id, columnId: found.col.id, ticket: updated });
