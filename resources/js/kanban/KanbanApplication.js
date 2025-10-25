@@ -4,7 +4,7 @@ import { DemoDataSourceAdapter } from './datasource/DemoDataSourceAdapter';
 import { LocalStorageStrategy } from './storage/LocalStorageStrategy';
 import createLoggerOrig from './utils/createLogger';
 import { KanbanView } from './KanbanView';
-import { TicketService } from './services/Ticket';
+import { TicketService } from './services/TicketService';
 import ThemeService from './services/ThemeService';
 import BackgroundService from './services/BackgroundService';
 import FilterService from './services/FilterService';
@@ -35,7 +35,7 @@ export default class KanbanApplication {
 		createFilterService = (state, storage, view, logger) => new FilterService(state, storage, view, logger),
 		createImportService = (view, cb) => new ImportService(view, cb),
 		createModal = () => new PopupModalAdapter(),
-		createTicketService = null,
+		createTicketService = () => new TicketService({ view: null, state: this.state, logger: this.logger }),
 	}) {
 
 		this.root = root;
@@ -145,9 +145,20 @@ export default class KanbanApplication {
 
 	// =============== Toolbar ===============
 	bindToolbar() {
+
+		console.group('%cKanbanApplication.js :: 149 =============================', 'color: #568472; font-size: 1rem');
+		console.log('Binding toolbar actions...');
+		console.log(this._ticketService);
+		console.groupEnd();
+
 			// Instancie le service une seule fois
 				if (this._ticketService) {
-					document.getElementById('createTicket')?.addEventListener('click', () => this._ticketService.openCreateTicketPopup());
+					document.getElementById('createTicket')?.addEventListener('click', () => {
+						console.group('%cKanbanApplication.js :: 151 =============================', 'color: #929257; font-size: 1rem');
+						console.log('Creating ticket...');
+						console.groupEnd();
+						this._ticketService.openCreateTicketPopup()
+					});
 				}
 		document.getElementById('addRandom')?.addEventListener('click', () => this.addRandom());
 		document.getElementById('resetBoard')?.addEventListener('click', () => this.resetBoard());

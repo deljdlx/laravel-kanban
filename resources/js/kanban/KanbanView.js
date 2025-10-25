@@ -1,7 +1,7 @@
 import Sortable from 'sortablejs';
 import TicketCard from './ui/TicketCard';
 import Popup from './ui/Popup';
-import { TicketService } from './services/Ticket';
+import { TicketService } from './services/TicketService';
 
 /** @typedef {import('./models/KanbanState').default} KanbanState */
 
