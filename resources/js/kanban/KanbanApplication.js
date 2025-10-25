@@ -4,7 +4,7 @@ import { DemoDataSourceAdapter } from './datasource/DemoDataSourceAdapter';
 import { LocalStorageStrategy } from './storage/LocalStorageStrategy';
 import createLoggerOrig from './utils/createLogger';
 import { KanbanView } from './KanbanView';
-import openCreateTicketPopup from './ui/createTicket';
+import openCreateTicketPopup from './services/Ticket';
 import ThemeService from './services/ThemeService';
 import BackgroundService from './services/BackgroundService';
 import FilterService from './services/FilterService';

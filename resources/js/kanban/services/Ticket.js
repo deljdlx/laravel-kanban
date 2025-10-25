@@ -1,4 +1,4 @@
-import NewTicketForm from './NewTicketForm';
+import NewTicketForm from '../ui/NewTicketForm';
 
 /**
  * Open the create-ticket popup, handle submit, add to state and DOM.
