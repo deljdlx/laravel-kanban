@@ -8,7 +8,8 @@ export const ColumnSerializer = {
   },
   fromDTO(dto) {
     if (!dto) return null;
-    return { id: String(dto.id), name: String(dto.name), tickets: Array.isArray(dto.tickets) ? dto.tickets : [] };
+    // Utilise Column.fromJSON pour garantir la structure et les tickets/commentaires
+    return Column.fromJSON(dto);
   }
 };
 
@@ -17,5 +18,10 @@ export const TicketSerializer = {
     if (!t) return null;
     if (typeof t.toJSON === 'function') return t.toJSON();
     return { ...t };
+  },
+  fromDTO(dto) {
+    if (!dto) return null;
+    // Utilise Ticket.fromJSON pour garantir la structure et les commentaires
+    return Ticket.fromJSON(dto);
   }
 };
