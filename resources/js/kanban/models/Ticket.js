@@ -13,31 +13,52 @@
  */
 
 class Ticket {
-    /*
-     * ==== Properties (overview) ====
-     * - id: string
-     * - title: string
-     * - description: string|null
-     * - author: string|null            (legacy display name)
-     * - authorId: string|null          (entity id reference)
-     * - label: 'blue'|'green'|'orange'|null        (legacy shim)
-     * - category: 'bug'|'feature'|'docs'|'chore'|null (legacy shim)
-     * - complexity: 'xs'|'s'|'m'|'l'|'xl'|null     (legacy shim)
-     * - taxonomies: Record<string,string|null>|undefined
-     * - createdAt: number (epoch ms)
+    /** @type {string} Identifiant unique du ticket */
+    id = '';
+    /** @type {string} Titre du ticket */
+    title = '';
+    /** @type {string|null} Description du ticket */
+    description = null;
+    /** @type {string|null} Auteur (legacy display name) */
+    author = null;
+    /** @type {string|null} Identifiant de l'auteur (entity id) */
+    authorId = null;
+    /** @type {'blue'|'green'|'orange'|null} Label (legacy shim) */
+    label = null;
+    /** @type {'bug'|'feature'|'docs'|'chore'|null} Catégorie (legacy shim) */
+    category = null;
+    /** @type {'xs'|'s'|'m'|'l'|'xl'|null} Complexité (legacy shim) */
+    complexity = null;
+    /** @type {Record<string,string|null>|undefined} Taxonomies associées */
+    taxonomies = undefined;
+    /** @type {number} Timestamp de création (ms) */
+    createdAt = 0;
+
+    /**
+     * Crée une instance de Ticket.
+     * @param {string} title - Titre du ticket (obligatoire)
+     * @param {Object} [params] - Paramètres optionnels
+     * @param {string} [params.id] - Identifiant unique
+     * @param {'blue'|'green'|'orange'|null} [params.label]
+     * @param {'bug'|'feature'|'docs'|'chore'|null} [params.category]
+     * @param {string|null} [params.description]
+     * @param {string|null} [params.author]
+     * @param {string|null} [params.authorId]
+     * @param {'xs'|'s'|'m'|'l'|'xl'|null} [params.complexity]
+     * @param {Record<string,string|null>} [params.taxonomies]
+     * @param {number} [params.createdAt]
      */
-    /** @param {{ id?: string, title: string, label?: 'blue'|'green'|'orange'|null, category?: 'bug'|'feature'|'docs'|'chore'|null, description?: string|null, author?: string|null, authorId?: string|null, complexity?: 'xs'|'s'|'m'|'l'|'xl'|null, taxonomies?: Record<string,string|null>, createdAt?: number }} param0 */
-    constructor({ id, title, label = null, category = null, description = null, author = null, authorId = null, complexity = null, taxonomies = undefined, createdAt = Date.now() }) {
-        this.id = id ?? (crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
+    constructor(title, params = {}) {
         this.title = title;
-        this.label = label; // legacy shim
-        this.category = category; // legacy shim
-        this.description = description ?? null;
-        this.author = author ?? null; // legacy
-        this.authorId = authorId ?? null; // entity ref
-        this.complexity = complexity ?? null; // legacy shim
-        this.taxonomies = taxonomies ?? undefined; // generic bag
-        this.createdAt = createdAt;
+        this.id = params.id ?? (crypto?.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));
+        this.label = params.label ?? null;
+        this.category = params.category ?? null;
+        this.description = params.description ?? null;
+        this.author = params.author ?? null;
+        this.authorId = params.authorId ?? null;
+        this.complexity = params.complexity ?? null;
+        this.taxonomies = params.taxonomies ?? undefined;
+        this.createdAt = params.createdAt ?? Date.now();
     }
     /** @returns {TicketDTO} */
     toJSON() {
@@ -50,7 +71,7 @@ class Ticket {
     static fromJSON(dto) {
         // Build taxonomies from explicit bag or legacy fields
         const taxonomies = dto.taxonomies ? { ...dto.taxonomies } : undefined;
-        return new Ticket({ ...dto, taxonomies });
+        return new Ticket(dto.title, { ...dto, taxonomies });
     }
 }
 
