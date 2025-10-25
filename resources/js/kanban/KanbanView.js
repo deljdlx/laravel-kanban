@@ -30,6 +30,7 @@ export class KanbanView {
       ticketService: services?.ticketService || null
     };
     this.render();
+    this.bindToolbar();
   }
 
 
@@ -142,4 +143,37 @@ export class KanbanView {
       }
     }).render();
   }
+
+	// =============== Toolbar ===============
+	bindToolbar() {
+
+    // WIP
+    return;
+
+    console.group('%cKanbanView.js :: 150 =============================', 'color: #619519; font-size: 1rem');
+    console.log(this.services);
+    console.groupEnd();
+
+
+    // Instancie le service une seule fois
+    if (this.services.ticketService) {
+      document.getElementById('createTicket')?.addEventListener('click', () => {
+        console.group('%cKanbanApplication.js :: 151 =============================', 'color: #929257; font-size: 1rem');
+        console.log('Creating ticket...');
+        console.groupEnd();
+        this.services.ticketService.openCreateTicketPopup()
+      });
+    }
+		document.getElementById('addRandom')?.addEventListener('click', () => this.addRandom());
+		document.getElementById('resetBoard')?.addEventListener('click', () => this.resetBoard());
+		document.getElementById('downloadJson')?.addEventListener('click', () => this.downloadJson());
+		document.getElementById('importJson')?.addEventListener('click', () => {
+			this.importer = this.importer || new ImportService(this.view, async (data) => { await this.importSnapshot(data); });
+			this.importer.open();
+		});
+
+		const reapply = () => this.filters?.applyFilters?.();
+		window.addEventListener('resize', reapply);
+	}
+
 }
