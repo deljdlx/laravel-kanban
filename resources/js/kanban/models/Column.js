@@ -24,7 +24,7 @@ class Column {
     constructor(id, name, tickets = []) {
         this.id = id;
         this.name = name;
-        this.tickets = (tickets || []).map(t => t instanceof Ticket ? t : new Ticket(t));
+    this.tickets = (tickets || []).map(t => t instanceof Ticket ? t : new Ticket(t.title, t));
     }
     /** @returns {ColumnDTO} */
     toJSON() { return { id: this.id, name: this.name, tickets: this.tickets.map(t => t.toJSON()) }; }

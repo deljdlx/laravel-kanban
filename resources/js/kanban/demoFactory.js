@@ -58,12 +58,14 @@ function demoFactory() {
       chosen[key] = picked ? picked.key : null;
     }
     const a = pick(authors);
-    return new Ticket({
-      title: pick(sampleTitles) + ' #' + Math.floor(Math.random()*900+100),
-      description: pick(sampleDescs),
-      authorId: a.id,
-      taxonomies: chosen,
-    });
+    return new Ticket(
+      pick(sampleTitles) + ' #' + Math.floor(Math.random()*900+100),
+      {
+        description: pick(sampleDescs),
+        authorId: a.id,
+        taxonomies: chosen,
+      }
+    );
   });
   const columns = [
     new Column('todo',   'À faire',     mk(4)),

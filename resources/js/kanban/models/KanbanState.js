@@ -159,7 +159,7 @@ class KanbanState {
             col.tickets = tickets.map(t => {
                 const allowed = this.getAllowedMap();
                 const tx = t.taxonomies ? sanitizeTaxonomies(t.taxonomies, allowed) : legacyToTaxonomies(t, allowed);
-                return new Ticket({ ...t, taxonomies: tx });
+                return new Ticket(t.title, { ...t, taxonomies: tx });
             });
         }
     }
@@ -243,7 +243,7 @@ class KanbanState {
         const col = this.columns.find(c => c.id === columnId);
         if (!col) return;
         const allowed = this.getAllowedMap();
-        const toAdd = ticket && ticket.id ? ticket : new Ticket({ ...(ticket || {}), taxonomies: sanitizeTaxonomies(ticket?.taxonomies || legacyToTaxonomies(ticket || {}, allowed), allowed) });
+    const toAdd = ticket && ticket.id ? ticket : new Ticket(ticket?.title ?? '', { ...(ticket || {}), taxonomies: sanitizeTaxonomies(ticket?.taxonomies || legacyToTaxonomies(ticket || {}, allowed), allowed) });
         col.tickets.unshift(toAdd);
         await this.persist({ op: 'addTicket', columnId, ticket: (typeof toAdd.toJSON === 'function' ? toAdd.toJSON() : toAdd) });
     }
