@@ -1,8 +1,10 @@
 import { buildTicketDetails } from './components/TicketDetails';
-import escapeHtml from '../utils/escapeHtml';
-/**
- * TicketPopup: gère l'affichage et les interactions du popup de ticket (détails, commentaires, formulaire, actions)
- */
+import { escapeHtml } from '../utils/escapeHtml';
+
+import { TicketCard } from './TicketCard';
+
+import { Commentaire } from '../models/Commentaire';
+
 export class TicketPopup {
   /**
    * @param {Object} params
@@ -11,6 +13,8 @@ export class TicketPopup {
    * @param {Object} params.data
    * @param {Object} params.modal
    */
+
+
   constructor({ card, el, data, modal }) {
     this.card = card;
     this.el = el;
@@ -96,11 +100,14 @@ export class TicketPopup {
       const textarea = this.commentForm.querySelector('textarea[name="comment"]');
       const text = textarea.value.trim();
       if (!text) return;
-      let Commentaire = null;
-      try { Commentaire = require('../models/Commentaire').default; } catch { Commentaire = window.Commentaire; }
       const author = (Array.isArray(this.authors) && this.authors[0]?.name) ? this.authors[0].name : 'Anonyme';
       const authorId = (Array.isArray(this.authors) && this.authors[0]?.id) ? this.authors[0].id : null;
-      const commentaire = Commentaire ? new Commentaire(text, { ticketId: this.data.id, author, authorId }) : { text, author, authorId, ticketId: this.data.id, createdAt: Date.now() };
+      const commentaire = new Commentaire(text, {
+          ticketId: this.data.id,
+          author,
+          authorId
+      });
+
       if (typeof this.data.addComment === 'function') {
         this.data.addComment(commentaire);
       } else {

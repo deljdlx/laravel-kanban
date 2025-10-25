@@ -7,7 +7,7 @@
  * @property {string} text - Texte du commentaire
  * @property {number} createdAt - Timestamp de création
  */
-class Commentaire {
+export class Commentaire {
   /**
    * @param {string} text
    * @param {Object} opts

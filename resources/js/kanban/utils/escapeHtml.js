@@ -1,4 +1,4 @@
-function escapeHtml(s) {
+export function escapeHtml(s) {
   const str = String(s ?? '');
   return str.replace(/[&<>"']/g, (c) => ({
     '&': '&amp;',

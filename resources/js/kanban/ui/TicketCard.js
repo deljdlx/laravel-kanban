@@ -42,7 +42,7 @@ import { TicketPopup } from './TicketPopup.js';
  * - Accepts callbacks for interactions
  * - Can receive an allowedMap to sanitize taxonomies against board meta
  */
-class TicketCard {
+export class TicketCard {
   /**
    * Ouvre le popup de détails du ticket
    * @param {HTMLElement} el
