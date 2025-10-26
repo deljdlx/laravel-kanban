@@ -55,9 +55,9 @@ import './css/main.scss';
     id: 'priority',
     name: 'Priority',
     terms: [
-      new Term('low', 'Low'),
-      new Term('medium', 'Medium'),
-      new Term('high', 'High'),
+  new Term({ id: 'low', name: 'Low' }),
+  new Term({ id: 'medium', name: 'Medium' }),
+  new Term({ id: 'high', name: 'High' }),
     ]
   });
 

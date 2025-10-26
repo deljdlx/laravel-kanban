@@ -11,11 +11,10 @@
 
 export class Term {
   /**
-   * @param {number|string} id
-   * @param {string} name
+   * @param {object} payload - {id, name}
    */
-  constructor(id, name) {
-    this.id = String(id);
-    this.name = name;
+  constructor(payload = {}) {
+    this.id = String(payload.id);
+    this.name = payload.name || '';
   }
 }
