@@ -51,11 +51,15 @@ import './css/main.scss';
   done.addTicket(new Ticket('Configurer Vite', { description: 'vite.config.js' }));
   board.addColumn(done);
 
-  const priorityTaxonomy = new Taxonomy('priority', 'Priority', [
-    new Term('low', 'Low'),
-    new Term('medium', 'Medium'),
-    new Term('high', 'High'),
-  ]);
+  const priorityTaxonomy = new Taxonomy({
+    id: 'priority',
+    name: 'Priority',
+    terms: [
+      new Term('low', 'Low'),
+      new Term('medium', 'Medium'),
+      new Term('high', 'High'),
+    ]
+  });
 
   board.addTaxonomy(priorityTaxonomy);
 

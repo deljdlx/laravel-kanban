@@ -7,15 +7,15 @@ import { Term } from './Term.js';
  * @property {Term[]} terms
  */
 
+
 export class Taxonomy {
   /**
-   * @param {number|string} id
-   * @param {string} name
+   * @param {object} payload - {id, name, terms}
    */
-  constructor(id, name, terms = []) {
-    this.id = String(id);
-    this.name = name;
-    this.terms = terms;
+  constructor(payload = {}) {
+    this.id = String(payload.id);
+    this.name = payload.name || '';
+    this.terms = payload.terms || [];
   }
 
   getName() {
