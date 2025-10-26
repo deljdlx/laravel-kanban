@@ -65,17 +65,6 @@ export class Modal extends View
     });
   }
 
-  addEventListener(eventName, callback) {
-    if (!this.listeners[eventName]) this.listeners[eventName] = [];
-    this.listeners[eventName].push(callback);
-  }
-
-  fireEvent(eventName, detail = {}) {
-    if (this.listeners[eventName]) {
-      this.listeners[eventName].forEach(cb => cb({ type: eventName, detail }));
-    }
-  }
-
   setContent(content) {
     this.content = content;
     this.contentElement.innerHTML = this.content;
