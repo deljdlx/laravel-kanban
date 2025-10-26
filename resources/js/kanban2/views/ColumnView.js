@@ -8,7 +8,8 @@ export class ColumnView {
   /**
    * @param {Column} column
    */
-  constructor(column) {
+  constructor(board, column) {
+    this.board = board;
     this.column = column;
     this.listeners = {};
   }
@@ -25,7 +26,7 @@ export class ColumnView {
   }
 
   addTicket(ticket) {
-    const view = new TicketView(ticket);
+    const view = new TicketView(this.board, ticket);
     this.list.appendChild(view.render());
   }
 
@@ -34,6 +35,8 @@ export class ColumnView {
    */
   render() {
     this.element = document.createElement('div');
+    this.element.model = this.column;
+
     this.element.className = 'kanban-column';
 
     const titleDiv = document.createElement('div');
@@ -45,8 +48,8 @@ export class ColumnView {
     this.list.className = 'kanban-tickets';
     this.list.dataset.columnId = this.column.id;
 
-    this.column.tickets.forEach(t => {
-      const view = new TicketView(t);
+    this.column.tickets.forEach(ticket => {
+      const view = new TicketView(this.board, ticket);
       this.list.appendChild(view.render());
     });
 

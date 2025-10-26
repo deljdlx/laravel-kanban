@@ -12,6 +12,10 @@ export class BoardView {
    * @param {Board} board
    */
   constructor(rootElement, board) {
+
+
+    this.model = board;
+
     this.root = rootElement;
     this.board = board;
     /** @type {Sortable[]} */
@@ -52,7 +56,7 @@ export class BoardView {
     this.boardEl = boardEl;
 
     this.board.columns.forEach(col => {
-      const colView = new ColumnView(col);
+      const colView = new ColumnView(this, col);
       const colEl = colView.render();
       // s'assure que chaque colonne porte un id exploitable par Sortable
       colEl.dataset.columnId = col.id;
