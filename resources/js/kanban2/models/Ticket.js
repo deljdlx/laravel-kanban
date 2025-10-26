@@ -16,22 +16,14 @@ export class Ticket {
    * @param {string} title
    * @param {object} [meta]
    */
-  constructor(title, meta = {}, id = null) {
-    this.title = title;
-    this.taxonomies = {};
-    this.description = '';
+  constructor(board, payload = {}) {
 
-    this._meta = meta;
+    this.board = board;
 
-    if(meta.taxonomies) {
-      this.taxonomies = meta.taxonomies;
-    }
-
-    if(meta.description) {
-      this.description = meta.description;
-    }
-
-    this.id = id ? String(id) : crypto.randomUUID();
+    this.id = payload.id || crypto.randomUUID();
+    this.title = payload.title || 'Untitled ticket';
+    this.description = payload.description || '';
+    this.taxonomies = payload.taxonomies || {};
   }
 
   getTitle() {
