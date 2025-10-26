@@ -5,6 +5,18 @@ export class BoardController {
     this.view = view;
   }
 
+  addTicketToColumn(columnId, ticket) {
+    const column = this.board.column(columnId);
+    if (!column) return false;
+
+    column.addTicket(ticket);
+
+    const columView = this.view.getColumnById(columnId);
+    columView.addTicket(ticket);
+
+    return true;
+  }
+
 
   /**
    * Déplace un ticket (inter ou intra colonne) et l’insère à l’index demandé.

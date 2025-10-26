@@ -5,9 +5,10 @@ export class Ticket {
    * @param {string} title
    * @param {object} [meta]
    */
-  constructor(id, title, meta = {}) {
-    this.id = String(id);
+  constructor(title, meta = {}, id = null) {
     this.title = title;
     this.meta = meta;
+
+    this.id = id ? String(id) : crypto.randomUUID();
   }
 }

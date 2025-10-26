@@ -22,6 +22,8 @@ export class BoardView {
     this.boardEl = null;
 
     this.listeners = {};
+
+    this.columns = [];
   }
 
   addEventListener(eventName, callback) {
@@ -33,6 +35,14 @@ export class BoardView {
     if (this.listeners[eventName]) {
       this.listeners[eventName].forEach(cb => cb({ type: eventName, detail }));
     }
+  }
+
+  getColumns() {
+    return this.columns;
+  }
+
+  getColumnById(columnId) {
+    return this.columns.find(c => c.column.id === columnId) || null;
   }
 
   render() {
@@ -47,6 +57,8 @@ export class BoardView {
       // s'assure que chaque colonne porte un id exploitable par Sortable
       colEl.dataset.columnId = col.id;
       boardEl.appendChild(colEl);
+
+      this.columns.push(colView);
     });
 
     this.root.appendChild(boardEl);
