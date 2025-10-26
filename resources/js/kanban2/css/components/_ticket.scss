@@ -12,19 +12,23 @@
 }
 
 
-
-
-
-.kanban-tickets .kanban-ticket.kanban-placeholder {
+.kanban-placeholder {
   opacity: 0.4;
   outline: 2px dashed #9aa; 
   transform: scale(0.98);
 }
 
 /* Feedback supplémentaire (optionnel) */
-.kanban-tickets .kanban-ticket.kanban-chosen { 
+.kanban-chosen { 
   outline: 2px solid #6aa; 
 }
+
+.kanban-tickets {
+  min-height: 32px;         /* permet de dropper même vide */
+  padding: 4px 0;           /* agrandit la zone de drop */
+}
+
 .kanban-tickets .kanban-ticket.kanban-drag { 
-  cursor: grabbing; 
+  cursor: grabbing;
+  border: #f0f 10px dashed;
 }
