@@ -26,4 +26,8 @@ export class Taxonomy {
     const term = this.terms.find(t => t.id === value);
     return term ? term.name : '';
   }
+
+  getTermById(termId) {
+    return this.terms.find(t => t.id === termId) ?? null;
+  }
 }

@@ -51,7 +51,7 @@ export class TicketDetailsModal extends Modal {
         ${Object.values(this.boardModel.getTaxonomies()).map(taxonomy => `
           <tr>
             <th>${taxonomy.getName()}</th>
-            <td class="taxonomy">${taxonomy.getNameByValue(this.ticket.getTaxonomies()[taxonomy.id])}</td>
+            <td class="taxonomy">${taxonomy.getNameByValue(this.ticket.getTaxonomies()[taxonomy.getName()])}</td>
           </tr>
         `).join('')}
       </table>

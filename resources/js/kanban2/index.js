@@ -60,8 +60,20 @@ import './css/main.scss';
   new Term({ id: 'high', name: 'High' }),
     ]
   });
-
   board.addTaxonomy(priorityTaxonomy);
+
+
+  const typesTaxonomy = new Taxonomy({
+    id: 'type',
+    name: 'Type',
+    terms: [
+      new Term({ id: 'bug', name: 'Bug' }),
+      new Term({ id: 'feature', name: 'Feature' }),
+      new Term({ id: 'improvement', name: 'Improvement' }),
+    ]
+  });
+  board.addTaxonomy(typesTaxonomy);
+
 
 
 

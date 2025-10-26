@@ -17,4 +17,8 @@ export class Term {
     this.id = String(payload.id);
     this.name = payload.name || '';
   }
+
+  getName() {
+    return this.name;
+  }
 }

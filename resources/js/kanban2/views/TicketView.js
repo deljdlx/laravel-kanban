@@ -57,9 +57,22 @@ export class TicketView extends View{
   renderTaxonomies() {
     const taxonomies = this.ticket.getTaxonomies();
     for (const [taxonomyId, termId] of Object.entries(taxonomies)) {
+
+
+      const taxonomy = this.boardModel.getTaxonomyById(taxonomyId);
+      if (!taxonomy) {
+        continue;
+      }
+
+      const term = taxonomy.getTermById(termId);
+      if (!term) {
+        continue;
+      }
+
+      
       const taxoDiv = document.createElement('div');
 
-      taxoDiv.textContent = `Term ${termId}`;
+      taxoDiv.textContent = `Term ${term.getName()}`;
       
       taxoDiv.dataset.taxonomyId = taxonomyId;
       taxoDiv.dataset.termId = termId;

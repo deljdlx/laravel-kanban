@@ -30,6 +30,10 @@ export class Board {
     return this.taxonomies;
   }
 
+  getTaxonomyById(taxonomyId) {
+    return this.taxonomies.find(t => t.id === taxonomyId) ?? null;
+  }
+
 
   /**
    * Trouve une colonne par id.
