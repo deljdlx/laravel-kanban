@@ -17,21 +17,9 @@ export class ColumnView extends View {
 
     this.column = column;
     this.model = column;
-    
-    this.listeners = {};
-
   }
 
-  addEventListener(eventName, callback) {
-    if (!this.listeners[eventName]) this.listeners[eventName] = [];
-    this.listeners[eventName].push(callback);
-  }
 
-  fireEvent(eventName, detail = {}) {
-    if (this.listeners[eventName]) {
-      this.listeners[eventName].forEach(cb => cb({ type: eventName, detail }));
-    }
-  }
 
   addTicket(ticket) {
     const view = new TicketView(this.boardView, ticket);
