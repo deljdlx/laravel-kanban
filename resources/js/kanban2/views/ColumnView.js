@@ -11,6 +11,7 @@ export class ColumnView {
    */
   constructor(column) {
     this.column = column;
+    this._placeholder = null;
   }
 
   /**
@@ -31,18 +32,14 @@ export class ColumnView {
     ticketsList.addEventListener('dragover', e => {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
-      // Highlight drop target
-      const afterElem = this._getDragAfterElement(ticketsList, e.clientY);
-      if (afterElem) {
-        afterElem.style.borderTop = '2px solid #2a9d8f';
-      }
+      this._showPlaceholder(ticketsList, e.clientY);
     });
     ticketsList.addEventListener('dragleave', e => {
-      Array.from(ticketsList.children).forEach(child => child.style.borderTop = '');
+      this._removePlaceholder(ticketsList);
     });
     ticketsList.addEventListener('drop', e => {
       e.preventDefault();
-      Array.from(ticketsList.children).forEach(child => child.style.borderTop = '');
+      this._removePlaceholder(ticketsList);
       const ticketId = e.dataTransfer.getData('text/plain');
       const ticketElem = document.getElementById(ticketId);
       if (!ticketElem) return;
@@ -70,7 +67,7 @@ export class ColumnView {
    * @returns {HTMLElement|null}
    */
   _getDragAfterElement(container, y) {
-    const draggableElements = [...container.querySelectorAll('.kanban-ticket:not([style*="display: none"])')];
+    const draggableElements = [...container.querySelectorAll('.kanban-ticket:not([style*="display: none"]):not(.kanban-placeholder)')];
     return draggableElements.reduce((closest, child) => {
       const box = child.getBoundingClientRect();
       const offset = y - box.top - box.height / 2;
@@ -80,5 +77,38 @@ export class ColumnView {
         return closest;
       }
     }, { offset: -Infinity, element: null }).element;
+  }
+
+  /**
+   * Affiche un placeholder visuel pour indiquer où le ticket sera inséré
+   * @param {HTMLElement} container
+   * @param {number} y
+   */
+  _showPlaceholder(container, y) {
+    this._removePlaceholder(container);
+    const afterElem = this._getDragAfterElement(container, y);
+    const placeholder = document.createElement('div');
+    placeholder.className = 'kanban-ticket kanban-placeholder';
+    placeholder.style.height = '48px';
+    placeholder.style.background = '#e0e7ef';
+    placeholder.style.border = '2px dashed #2a9d8f';
+    placeholder.style.margin = '4px 0';
+    if (afterElem) {
+      container.insertBefore(placeholder, afterElem);
+    } else {
+      container.appendChild(placeholder);
+    }
+    this._placeholder = placeholder;
+  }
+
+  /**
+   * Enlève le placeholder visuel
+   * @param {HTMLElement} container
+   */
+  _removePlaceholder(container) {
+    if (this._placeholder && container.contains(this._placeholder)) {
+      container.removeChild(this._placeholder);
+      this._placeholder = null;
+    }
   }
 }

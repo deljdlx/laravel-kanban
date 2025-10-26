@@ -1,0 +1,13 @@
+#kanban {
+    height: 700px;
+    width: 100%;
+    border: 1px solid #f0f;
+    position: relative;
+}
+
+.kanban-board {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  height: 100%;
+}
