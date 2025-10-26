@@ -31,7 +31,6 @@ export class TicketDetailsModal extends Modal {
 
     this.setFooter(`
       <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-      <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
     `);
   }
 
