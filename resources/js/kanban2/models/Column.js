@@ -22,6 +22,10 @@ export class Column {
     this.tickets = tickets;
   }
 
+  getName() {
+    return this.name || 'Unnamed column';
+  }
+
   addTicket(ticket) {
     this.tickets.push(ticket);
   }

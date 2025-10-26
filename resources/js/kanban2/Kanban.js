@@ -8,6 +8,7 @@ import { Ticket } from './models/Ticket.js';
 
 
 import { CreateTicketModal } from './views/modals/CreateTicketModal.js';
+import { CreateColumnModal } from './views/modals/CreateColumnModal.js';
 
 /** @class
  * @property {Board} board
@@ -34,14 +35,20 @@ export class Kanban {
 
     this.initColumns();
     this.handleTicketMove();
+      this.handleAddColumn();
   }
 
   initColumns() {
     this.view.getColumns().forEach(colView => {
+      this.initColumn(colView);
+    });
+  }
+
+
+  initColumn(colView) {
       colView.addEventListener('addTicket', (e) => {
         this.handleAddTicket(e);
       });
-    });
   }
 
   handleAddTicket(e) {
@@ -58,6 +65,22 @@ export class Kanban {
     }));
     ticketModal.open();
   }
+
+    handleAddColumn() {
+      const addColumnBtn = document.getElementById('addColumn');
+      if (!addColumnBtn) return;
+      addColumnBtn.addEventListener('click', () => {
+        const columnModal = new CreateColumnModal(this.view);
+        columnModal.render();
+        columnModal.addEventListener('save', (ev) => {
+          const { name } = ev.detail;
+          // Crée la colonne côté modèle
+          const {model, view} = this.boardController.addColumn(name);
+          this.initColumn(view);
+        });
+        columnModal.open();
+      });
+    }
 
   handleTicketMove() {
     this.view.addEventListener('ticketMoved', (e) => {

@@ -1,4 +1,5 @@
 import { Ticket } from '../models/Ticket.js';
+import { Column } from '../models/Column.js';
 
 export class BoardController {
 
@@ -6,6 +7,25 @@ export class BoardController {
     this.board = board;
     this.view = view;
   }
+
+  /**
+   * Crée une nouvelle colonne dans le board.
+   * @param {string} name
+   * @returns {Column}
+   */
+  addColumn(name) {
+    // On suppose que le modèle Board a une méthode addColumn(name)
+
+    const column = new Column(name);
+    this.board.addColumn(column);
+    const view = this.view.addColumn(column);
+
+    return {
+      model: column,
+      view: view,
+    };
+  }
+
 
   addTicketToColumn(columnId, ticketData) {
 

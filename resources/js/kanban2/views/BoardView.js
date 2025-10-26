@@ -54,6 +54,22 @@ export class BoardView {
     return this.columns.find(c => c.column.id === columnId) || null;
   }
 
+  addColumn(column)
+  {
+    const colView = new ColumnView(this, column);
+    const colEl = colView.render();
+    // s'assure que chaque colonne porte un id exploitable par Sortable
+    colEl.dataset.columnId = column.id;
+
+    this.boardEl.appendChild(colEl);
+    this.columns.push(colView);
+
+    this._initColumnsSortable();  // refresh
+    this._initSortables();        // refresh tickets
+
+    return colView;
+  }
+
   render() {
     this.root.innerHTML = '';
     const boardEl = document.createElement('div');

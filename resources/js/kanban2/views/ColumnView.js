@@ -1,6 +1,8 @@
 import { TicketView } from './TicketView.js';
 import { View } from './View.js';
 
+import { CreateTicketModal } from './modals/CreateTicketModal.js';
+
 /** @class
  * @property {Column} column
  * @property {Object} listeners
@@ -36,6 +38,7 @@ export class ColumnView extends View {
     this.list.appendChild(view.render());
   }
 
+
   /**
    * @returns {HTMLElement}
    */
@@ -47,7 +50,7 @@ export class ColumnView extends View {
 
     const titleDiv = document.createElement('div');
     titleDiv.className = 'kanban-column-title';
-    titleDiv.textContent = this.column.name;
+    titleDiv.textContent = this.column.getName();
     this.element.appendChild(titleDiv);
 
     this.list = document.createElement('div');
