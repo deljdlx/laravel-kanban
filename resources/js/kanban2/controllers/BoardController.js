@@ -16,7 +16,9 @@ export class BoardController {
   addColumn(name) {
     // On suppose que le modèle Board a une méthode addColumn(name)
 
-    const column = new Column(name);
+    const column = new Column(this.view, {
+      name: name,
+    });
     this.board.addColumn(column);
     const view = this.view.addColumn(column);
 

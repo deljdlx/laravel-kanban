@@ -22,7 +22,10 @@ import './css/main.scss';
   const board = new Board();
   
   // Données d’exemple
-  const todo = new Column(board, 'todo', 'À faire');
+  const todo = new Column(board, {
+    id: 'todo',
+    name: 'À faire'
+  });
   todo.addTicket(new Ticket('Mettre en place Vite', { description: 'npm install && npm run dev', taxonomies:{
     priority: 'high'
   }}));
@@ -31,13 +34,19 @@ import './css/main.scss';
 
   board.addColumn(todo);
 
-  const doing = new Column(board, 'doing');
+  const doing = new Column(board, {
+    id: 'doing',
+    name: 'En cours'
+  });
   doing.addTicket(new Ticket('Créer modèles JS', { description: 'Board, Column, Ticket' }));
   doing.addTicket(new Ticket('Créer vues JS', { description: 'BoardView, ColumnView, TicketView' }));
 
   board.addColumn(doing);
 
-  const done = new Column(board, 'done', 'Terminé');
+  const done = new Column(board, {
+    id: 'done',
+    name: 'Terminé'
+  });
   done.addTicket(new Ticket('Initialiser projet', { description: 'npm init, installer dépendances' }));
   done.addTicket(new Ticket('Configurer Vite', { description: 'vite.config.js' }));
   board.addColumn(done);

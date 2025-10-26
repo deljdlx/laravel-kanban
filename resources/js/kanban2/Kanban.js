@@ -35,7 +35,7 @@ export class Kanban {
 
     this.initColumns();
     this.handleTicketMove();
-      this.handleAddColumn();
+    this.handleAddColumn();
   }
 
   initColumns() {
@@ -46,17 +46,13 @@ export class Kanban {
 
 
   initColumn(colView) {
-      colView.addEventListener('addTicket', (e) => {
-        this.handleAddTicket(e);
-      });
+    colView.addEventListener('addTicket', (e) => {
+      this.handleAddTicket(e);
+    });
   }
 
   handleAddTicket(e) {
     const { column } = e.detail;
-
-    console.group('%cKanban.js :: 50 =============================', 'color: #477744; font-size: 1rem');
-    console.log(this.view);
-    console.groupEnd();
 
     const ticketModal = new CreateTicketModal(this.view);
     ticketModal.render();
@@ -66,21 +62,23 @@ export class Kanban {
     ticketModal.open();
   }
 
-    handleAddColumn() {
-      const addColumnBtn = document.getElementById('addColumn');
-      if (!addColumnBtn) return;
-      addColumnBtn.addEventListener('click', () => {
-        const columnModal = new CreateColumnModal(this.view);
-        columnModal.render();
-        columnModal.addEventListener('save', (ev) => {
-          const { name } = ev.detail;
-          // Crée la colonne côté modèle
-          const {model, view} = this.boardController.addColumn(name);
-          this.initColumn(view);
-        });
-        columnModal.open();
+  handleAddColumn() {
+    const addColumnBtn = document.getElementById('addColumn');
+    if (!addColumnBtn) return;
+    addColumnBtn.addEventListener('click', () => {
+      const columnModal = new CreateColumnModal(this.view);
+      columnModal.render();
+      columnModal.addEventListener('save', (ev) => {
+        const { name } = ev.detail;
+        // Crée la colonne côté modèle
+        const { model, view } = this.boardController.addColumn(name);
+        this.initColumn(view);
+        // close the modal
+        columnModal.close();
       });
-    }
+      columnModal.open();
+    });
+  }
 
   handleTicketMove() {
     this.view.addEventListener('ticketMoved', (e) => {

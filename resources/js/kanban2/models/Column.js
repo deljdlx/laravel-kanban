@@ -15,10 +15,10 @@ export class Column {
    * @param {string} name
    * @param {Ticket[]} [tickets]
    */
-  constructor(board, id, name, tickets = []) {
+  constructor(board, payload, tickets = []) {
     this.board = board;
-    this.id = id;
-    this.name = name;
+    this.id = payload.id || crypto.randomUUID();
+    this.name = payload.name || 'Unnamed column';
     this.tickets = tickets;
   }
 
