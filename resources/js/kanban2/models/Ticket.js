@@ -32,10 +32,6 @@ export class Ticket {
     }
 
     this.id = id ? String(id) : crypto.randomUUID();
-
-    console.group('%cTicket.js :: 25 =============================', 'color: #505815; font-size: 1rem');
-    console.log(this);
-    console.groupEnd();
   }
 
   getDescription() {

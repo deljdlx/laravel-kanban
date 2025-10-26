@@ -33,13 +33,13 @@ export class ColumnView {
    * @returns {HTMLElement}
    */
   render() {
-    this.container = document.createElement('div');
-    this.container.className = 'kanban-column';
+    this.element = document.createElement('div');
+    this.element.className = 'kanban-column';
 
     const titleDiv = document.createElement('div');
     titleDiv.className = 'kanban-column-title';
     titleDiv.textContent = this.column.name;
-    this.container.appendChild(titleDiv);
+    this.element.appendChild(titleDiv);
 
     this.list = document.createElement('div');
     this.list.className = 'kanban-tickets';
@@ -50,7 +50,7 @@ export class ColumnView {
       this.list.appendChild(view.render());
     });
 
-    this.container.appendChild(this.list);
+    this.element.appendChild(this.list);
 
     const addTicketBtn = document.createElement('button');
     addTicketBtn.className = 'kanban-add-ticket-btn';
@@ -60,9 +60,9 @@ export class ColumnView {
       this.fireAddTicket(null);
     });
 
-    this.container.appendChild(addTicketBtn);
+    this.element.appendChild(addTicketBtn);
 
-    return this.container;
+    return this.element;
   }
 
   fireAddTicket() {
