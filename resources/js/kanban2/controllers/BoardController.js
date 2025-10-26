@@ -4,7 +4,7 @@ import { Column } from '../models/Column.js';
 export class BoardController {
 
   constructor(board, view) {
-    this.board = board;
+    this.boardModel = board;
     this.view = view;
   }
 
@@ -19,7 +19,7 @@ export class BoardController {
     const column = new Column(this.view, {
       name: name,
     });
-    this.board.addColumn(column);
+    this.boardModel.addColumn(column);
     const view = this.view.addColumn(column);
 
     return {
@@ -35,7 +35,7 @@ export class BoardController {
     const ticket = new Ticket(title, ticketData);
 
 
-    const column = this.board.column(columnId);
+    const column = this.boardModel.column(columnId);
     if (!column) return false;
 
     column.addTicket(ticket);
@@ -59,7 +59,7 @@ export class BoardController {
     if (!located) return false;
 
     const { ticket, column: fromCol } = located;
-    const toCol = this.board.column(toColumnId);
+    const toCol = this.boardModel.column(toColumnId);
     if (!toCol) return false;
 
     // Retire de la source
@@ -94,7 +94,7 @@ export class BoardController {
    * @returns {{ticket: Ticket, column: Column, index: number}|null}
    */
   locateTicket(ticketId) {
-    for (const col of this.board.columns) {
+    for (const col of this.boardModel.columns) {
       const idx = col.tickets.findIndex(t => t.id === ticketId);
       if (idx !== -1) return { ticket: col.tickets[idx], column: col, index: idx };
     }

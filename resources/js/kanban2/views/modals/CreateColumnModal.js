@@ -8,7 +8,7 @@ import { Modal } from '../components/Modal.js';
 export class CreateColumnModal extends Modal {
   constructor(board, id = 'columnModal', rootElement = null) {
     super(board, id, rootElement);
-    this.board = board;
+
     this.title = 'Créer une colonne';
     this.setContent(this.html());
     this.setFooter(`

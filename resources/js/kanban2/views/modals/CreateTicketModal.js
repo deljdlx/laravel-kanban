@@ -9,11 +9,6 @@ export class CreateTicketModal extends Modal {
   constructor(board, id = 'ticketModal', rootElement = null) {
     super(board, id, rootElement);
 
-    console.group('%cTicketModal.js :: 8 =============================', 'color: #544728; font-size: 1rem');
-    console.log("ICI");
-    console.groupEnd();
-
-    this.board = board;
     this.title = 'Ticket Details';
 
     this.setContent(this.html());
@@ -24,7 +19,7 @@ export class CreateTicketModal extends Modal {
     `);
 
 
-    const taxonomies = this.board.getModel().getTaxonomies();
+    const taxonomies = this.boardModel.getTaxonomies();
     taxonomies.forEach(taxonomy => {
       const taxonomyView = new TaxonomyView(taxonomy);
       this.contentElement.appendChild(taxonomyView.render());

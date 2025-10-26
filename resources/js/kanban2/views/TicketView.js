@@ -41,13 +41,8 @@ export class TicketView extends View{
   }
 
   showDetails() {
-
-    console.group('%cTicketView.js :: 45 =============================', 'color: #362619; font-size: 1rem');
-    console.log(this.board);
-    console.groupEnd();
-
     const detailsModal = new TicketDetailsModal(
-      this.board,
+      this.boardView,
       this.ticket
     );
     detailsModal.open();

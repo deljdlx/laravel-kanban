@@ -34,7 +34,7 @@ export class ColumnView extends View {
   }
 
   addTicket(ticket) {
-    const view = new TicketView(this.board, ticket);
+    const view = new TicketView(this.boardView, ticket);
     this.list.appendChild(view.render());
   }
 
@@ -58,7 +58,7 @@ export class ColumnView extends View {
     this.list.dataset.columnId = this.column.id;
 
     this.column.tickets.forEach(ticket => {
-      const view = new TicketView(this.board, ticket);
+      const view = new TicketView(this.boardView, ticket);
       this.list.appendChild(view.render());
     });
 

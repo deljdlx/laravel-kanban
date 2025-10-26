@@ -7,7 +7,7 @@
 export class View
 {
   constructor(board) {
-    this.board = board;
+    this.boardView = board;
     this.boardModel = board.getModel();
   }
 }
