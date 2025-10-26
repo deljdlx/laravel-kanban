@@ -20,6 +20,25 @@ export class TicketView {
     tDiv.className = 'kanban-ticket';
     tDiv.id = this.ticket.id;
     tDiv.draggable = true;
+    this._bindDragAndDropEvents(tDiv);
+    // Content
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'kanban-ticket-title';
+    titleDiv.textContent = this.ticket.title;
+    tDiv.appendChild(titleDiv);
+    const descDiv = document.createElement('div');
+    descDiv.className = 'kanban-ticket-desc';
+    descDiv.textContent = this.ticket.description;
+    tDiv.appendChild(descDiv);
+    return tDiv;
+  }
+
+  /**
+   * Ajoute les événements drag&drop au ticket
+   * @param {HTMLElement} tDiv
+   * @private
+   */
+  _bindDragAndDropEvents(tDiv) {
     // Drag events
     tDiv.addEventListener('dragstart', e => {
       e.dataTransfer.effectAllowed = 'move';
@@ -37,15 +56,5 @@ export class TicketView {
         elem.appendChild(tDiv);
       }
     });
-    // Content
-    const titleDiv = document.createElement('div');
-    titleDiv.className = 'kanban-ticket-title';
-    titleDiv.textContent = this.ticket.title;
-    tDiv.appendChild(titleDiv);
-    const descDiv = document.createElement('div');
-    descDiv.className = 'kanban-ticket-desc';
-    descDiv.textContent = this.ticket.description;
-    tDiv.appendChild(descDiv);
-    return tDiv;
   }
 }
