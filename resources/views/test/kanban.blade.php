@@ -15,12 +15,17 @@
     <h1 class="title" id="kanban-title">Kanban</h1>
     <button id="kanban-title-warn" type="button" class="btn" style="margin-left:8px; display:none;"></button>
         <div>
-            <button class="btn" id="toggleTheme" title="Basculer thème">Mode clair</button>
+
+
+          <button class="btn" id="addColumn" title="Add column">Add column</button>
+
+
+            <!-- <button class="btn" id="toggleTheme" title="Basculer thème">Mode clair</button>
             <button class="btn" id="createTicket">Créer nouveau ticket</button>
             <button class="btn" id="addRandom">Ajouter une carte aléatoire</button>
             <button class="btn" id="downloadJson">Télécharger JSON</button>
             <button class="btn" id="importJson">Importer JSON</button>
-            <button class="btn" id="resetBoard">Réinitialiser</button>
+            <button class="btn" id="resetBoard">Réinitialiser</button> -->
         </div>
     </div>
     <div id="kanban-filters" class="filters"></div>
