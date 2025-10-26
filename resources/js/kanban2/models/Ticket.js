@@ -6,6 +6,7 @@ import { Taxonomy } from '../models/Taxonomy.js';
  * @property {string} title - The title of the ticket.
  * @property {string} description - The description of the ticket.
  * @property {Taxonomy[]} taxonomies - The taxonomies associated with the ticket.
+ * @property {Board} board - The board to which the ticket belongs. 
  * 
  * @property {object} _meta - Additional metadata for the ticket.
  * 
