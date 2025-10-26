@@ -17,4 +17,13 @@ export class Taxonomy {
     this.name = name;
     this.terms = terms;
   }
+
+  getName() {
+    return this.name;
+  }
+
+  getNameByValue(value) {
+    const term = this.terms.find(t => t.id === value);
+    return term ? term.name : '';
+  }
 }

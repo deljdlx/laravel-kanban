@@ -1,5 +1,5 @@
 import {Modal as TablerModal} from '@tabler/core/dist/js/tabler.min.js';
-
+import { View } from '../View.js';
 
 /**
  * @class Modal
@@ -10,9 +10,14 @@ import {Modal as TablerModal} from '@tabler/core/dist/js/tabler.min.js';
  * @property {String} id
  */
 
-export class Modal {
+export class Modal extends View
+{
 
-  constructor(id = 'mainModal', rootElement = null) {
+  constructor(board, id = 'mainModal', rootElement = null) {
+
+    super(board);
+
+
     if(!rootElement) {
       this.rootElement = document.body;
     } else {

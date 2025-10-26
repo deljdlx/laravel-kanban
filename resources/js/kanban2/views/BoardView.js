@@ -1,6 +1,8 @@
 import Sortable from 'sortablejs';
 import { ColumnView } from './ColumnView.js';
 
+import { View } from './View.js';
+
 /** @class
  * @property {HTMLElement} root
  * @property {Board} board
@@ -12,12 +14,10 @@ export class BoardView {
    * @param {Board} board
    */
   constructor(rootElement, board) {
-
-
+    this.board = board;
     this.model = board;
 
     this.root = rootElement;
-    this.board = board;
     /** @type {Sortable[]} */
     this.sortables = [];
     /** @type {Sortable|null} */
@@ -28,6 +28,11 @@ export class BoardView {
     this.listeners = {};
 
     this.columns = [];
+  }
+
+
+  getModel() {
+    return this.board;
   }
 
   addEventListener(eventName, callback) {

@@ -1,17 +1,23 @@
 import { TicketView } from './TicketView.js';
+import { View } from './View.js';
 
 /** @class
  * @property {Column} column
  * @property {Object} listeners
 */
-export class ColumnView {
+export class ColumnView extends View {
   /**
    * @param {Column} column
    */
   constructor(board, column) {
-    this.board = board;
+
+    super(board);
+
     this.column = column;
+    this.model = column;
+    
     this.listeners = {};
+
   }
 
   addEventListener(eventName, callback) {

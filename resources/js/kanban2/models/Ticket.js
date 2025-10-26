@@ -34,6 +34,10 @@ export class Ticket {
     this.id = id ? String(id) : crypto.randomUUID();
   }
 
+  getTitle() {
+    return this.title;
+  } 
+
   getDescription() {
     return this.description;
   }

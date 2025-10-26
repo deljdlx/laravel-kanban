@@ -4,10 +4,10 @@ import { Modal } from '../components/Modal.js';
 import { Taxonomy } from '../../models/Taxonomy.js';
 import { TaxonomyView } from '../components/TaxonomyView.js';
 
-export class TicketModal extends Modal {
+export class CreateTicketModal extends Modal {
 
   constructor(board, id = 'ticketModal', rootElement = null) {
-    super(id, rootElement);
+    super(board, id, rootElement);
 
     console.group('%cTicketModal.js :: 8 =============================', 'color: #544728; font-size: 1rem');
     console.log("ICI");
@@ -24,7 +24,7 @@ export class TicketModal extends Modal {
     `);
 
 
-    const taxonomies = this.board.getTaxonomies();
+    const taxonomies = this.board.getModel().getTaxonomies();
     taxonomies.forEach(taxonomy => {
       const taxonomyView = new TaxonomyView(taxonomy);
       this.contentElement.appendChild(taxonomyView.render());

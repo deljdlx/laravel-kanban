@@ -1,24 +1,22 @@
 import { Ticket } from '../models/Ticket.js';
 import { TicketDetailsModal } from './modals/TicketDetailsModal.js';
+import { View } from './View.js';
 
-/** @class */
-export class TicketView {
+/** @class
+ * 
+ * 
+ * 
+*/
+export class TicketView extends View{
   /**
    * @param {Ticket} ticket
    */
   constructor(board, ticket) {
 
+    super(board);
 
-    console.group('%cTicketView.js :: 12 =============================', 'color: #173347; font-size: 1rem');
-    console.log(board);
-    console.groupEnd();
-
-    console.group('%cTicketView.js :: 16 =============================', 'color: #225976; font-size: 1rem');
-    console.log(ticket);
-    console.groupEnd();
-
-    this.board = board;
     this.ticket = ticket;
+    this.model = ticket;
 
     this.element = document.createElement('div');
     this.element.model = this.ticket;
@@ -43,8 +41,16 @@ export class TicketView {
   }
 
   showDetails() {
-    const detailsModal = new TicketDetailsModal(this.ticket);
-    $detailsModal.show();
+
+    console.group('%cTicketView.js :: 45 =============================', 'color: #362619; font-size: 1rem');
+    console.log(this.board);
+    console.groupEnd();
+
+    const detailsModal = new TicketDetailsModal(
+      this.board,
+      this.ticket
+    );
+    detailsModal.open();
   }
 
 
