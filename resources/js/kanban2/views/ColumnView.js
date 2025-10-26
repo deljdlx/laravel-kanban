@@ -1,7 +1,7 @@
 import { TicketView } from './TicketView.js';
 import { View } from './View.js';
 
-import { CreateTicketModal } from './modals/CreateTicketModal.js';
+import { EditTicketModal } from './modals/EditTicketModal.js';
 
 /** @class
  * @property {Column} column
@@ -78,11 +78,6 @@ export class ColumnView extends View {
   }
 
   fireAddTicket() {
-
-    console.group('%cColumnView.js :: 65 =============================', 'color: #485785; font-size: 1rem');
-    console.log('fireAddTicket called');
-    console.groupEnd();
-
     this.fireEvent('addTicket', { 
       column: this.column
      });

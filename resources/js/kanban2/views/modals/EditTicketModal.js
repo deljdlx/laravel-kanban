@@ -4,7 +4,7 @@ import { Modal } from '../components/Modal.js';
 import { Taxonomy } from '../../models/Taxonomy.js';
 import { TaxonomyView } from '../components/TaxonomyView.js';
 
-export class CreateTicketModal extends Modal {
+export class EditTicketModal extends Modal {
 
   constructor(board, id = 'ticketModal', rootElement = null) {
     super(board, id, rootElement);

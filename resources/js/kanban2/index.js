@@ -26,11 +26,11 @@ import './css/main.scss';
     id: 'todo',
     name: 'À faire'
   });
-  todo.addTicket(new Ticket('Mettre en place Vite', { description: 'npm install && npm run dev', taxonomies:{
+  todo.addTicket(new Ticket(board, { title: 'Mettre en place Vite', description: 'npm install && npm run dev', taxonomies:{
     priority: 'high'
   }}));
-  todo.addTicket(new Ticket('Créer structure fichiers', { description: 'models/, views/, controllers/' }));
-  todo.addTicket(new Ticket('Implémenter drag & drop', { description: 'SortableJS' }));
+  todo.addTicket(new Ticket(board, { title: 'Créer structure fichiers', description: 'models/, views/, controllers/' }));
+  todo.addTicket(new Ticket(board, { title: 'Implémenter drag & drop', description: 'SortableJS' }));
 
   board.addColumn(todo);
 
@@ -38,8 +38,8 @@ import './css/main.scss';
     id: 'doing',
     name: 'En cours'
   });
-  doing.addTicket(new Ticket('Créer modèles JS', { description: 'Board, Column, Ticket' }));
-  doing.addTicket(new Ticket('Créer vues JS', { description: 'BoardView, ColumnView, TicketView' }));
+  doing.addTicket(new Ticket(board, { title: 'Créer modèles JS', description: 'Board, Column, Ticket' }));
+  doing.addTicket(new Ticket(board, { title: 'Créer vues JS', description: 'BoardView, ColumnView, TicketView' }));
 
   board.addColumn(doing);
 
@@ -47,8 +47,8 @@ import './css/main.scss';
     id: 'done',
     name: 'Terminé'
   });
-  done.addTicket(new Ticket('Initialiser projet', { description: 'npm init, installer dépendances' }));
-  done.addTicket(new Ticket('Configurer Vite', { description: 'vite.config.js' }));
+  done.addTicket(new Ticket(board, { title: 'Initialiser projet', description: 'npm init, installer dépendances' }));
+  done.addTicket(new Ticket(board, { title: 'Configurer Vite', description: 'vite.config.js' }));
   board.addColumn(done);
 
   const priorityTaxonomy = new Taxonomy({

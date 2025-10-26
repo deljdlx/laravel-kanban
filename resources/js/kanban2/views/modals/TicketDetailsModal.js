@@ -21,17 +21,19 @@ export class TicketDetailsModal extends Modal {
 
     this.title = 'Ticket Details';
 
-
-    console.group('%cTicketDetailsModal.js :: 17 =============================', 'color: #230547; font-size: 1rem');
-    console.log(this.ticket.getTaxonomies());
-    console.groupEnd();
-
-
     this.setContent(this.html());
 
     this.setFooter(`
       <button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
+      <button type="button" class="btn btn-primary btn-edit">Edit</button>
     `);
+
+    this.editButton = this.footerElement.querySelector('.btn-edit');
+    if (this.editButton) {
+      this.editButton.addEventListener('click', () => {
+        this.fireEvent('edit', { ticket: this.ticket });
+      });
+    }
   }
 
 

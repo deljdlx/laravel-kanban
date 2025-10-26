@@ -7,7 +7,7 @@ import { BoardController } from './controllers/BoardController.js';
 import { Ticket } from './models/Ticket.js';
 
 
-import { CreateTicketModal } from './views/modals/CreateTicketModal.js';
+import { EditTicketModal } from './views/modals/EditTicketModal.js';
 import { CreateColumnModal } from './views/modals/CreateColumnModal.js';
 
 /** @class
@@ -54,7 +54,7 @@ export class Kanban {
   handleAddTicket(e) {
     const { column } = e.detail;
 
-    const ticketModal = new CreateTicketModal(this.view);
+    const ticketModal = new EditTicketModal(this.view);
     ticketModal.render();
     ticketModal.addEventListener('save', (ev => {
       this.boardController.addTicketToColumn(column.id, ev.detail);
