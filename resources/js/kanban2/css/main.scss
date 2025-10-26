@@ -4,3 +4,48 @@
 @import './components/ticket';
 
 
+:root {
+  --bg: #0f1115;
+  --fg: #e8eaed;
+  --muted: #a7b0c0;
+  --accent: #5aa9ff;
+  --card: #171a21;
+  --card2: #1e232d;
+  --border: #2a3040;
+  --good: #29c67a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+h1 {
+  margin: 16px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+#kanban-root {
+  min-height: 720px;
+}
+
+.kanban-board {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+
+
+

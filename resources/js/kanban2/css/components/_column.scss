@@ -1,17 +1,48 @@
-
 .kanban-column {
-  flex: 1 1 0;
-  background: $kanban-bg;
-  border: 1px solid $kanban-border;
-  border-radius: $column-radius;
-  padding: 8px;
-  min-width: 200px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-width: 280px;
+  max-width: 320px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  height: 720px;
 }
 
 .kanban-column-title {
-  font-weight: bold;
-  margin-bottom: 8px;
+  padding: 12px 14px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+
+
+
+
+.kanban-tickets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 12px 28px;
+  min-height: 48px;             /* Drop facile même vide */
+  background: transparent;
+  position: relative;
+}
+
+/* Surface de drop supplémentaire en bas de chaque colonne */
+.kanban-tickets::after {
+  content: "";
+  display: block;
+  height: 28px;
+}
+
+/* Message d'indication quand colonne vide */
+.kanban-tickets:empty::after {
+  content: "Déposez ici";
+  color: var(--muted);
+  font-size: 12px;
+  padding: 8px;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  text-align: center;
+  opacity: 0.75;
 }

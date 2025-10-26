@@ -24,7 +24,13 @@
         </div>
     </div>
     <div id="kanban-filters" class="filters"></div>
-    <div id="kanban" class="board"></div>
+    
+
+
+
+      <div id="kanban-root"></div>
+
+
     <p class="credits">JS POO + SortableJS. Aucun backend; données en mémoire/localStorage.</p>
 
     

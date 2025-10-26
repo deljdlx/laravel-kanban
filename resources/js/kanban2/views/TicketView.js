@@ -1,8 +1,4 @@
-/**
- * Vue d'un ticket du Kanban.
- * @class
- * @property {Ticket} ticket
- */
+/** @class */
 export class TicketView {
   /**
    * @param {Ticket} ticket
@@ -12,49 +8,24 @@ export class TicketView {
   }
 
   /**
-   * Rend le ticket en DOM
    * @returns {HTMLElement}
    */
   render() {
-    const tDiv = document.createElement('div');
-    tDiv.className = 'kanban-ticket';
-    tDiv.id = this.ticket.id;
-    tDiv.draggable = true;
-    this._bindDragAndDropEvents(tDiv);
-    // Content
-    const titleDiv = document.createElement('div');
-    titleDiv.className = 'kanban-ticket-title';
-    titleDiv.textContent = this.ticket.title;
-    tDiv.appendChild(titleDiv);
-    const descDiv = document.createElement('div');
-    descDiv.className = 'kanban-ticket-desc';
-    descDiv.textContent = this.ticket.description;
-    tDiv.appendChild(descDiv);
-    return tDiv;
-  }
+    // IMPORTANT : l’élément DRAGGABLE doit être l’enfant direct de .kanban-tickets
+    const el = document.createElement('div');
+    el.className = 'kanban-ticket';
+    el.dataset.id = this.ticket.id;
 
-  /**
-   * Ajoute les événements drag&drop au ticket
-   * @param {HTMLElement} tDiv
-   * @private
-   */
-  _bindDragAndDropEvents(tDiv) {
-    // Drag events
-    tDiv.addEventListener('dragstart', e => {
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', this.ticket.id);
-      setTimeout(() => { tDiv.style.display = 'none'; }, 0);
-    });
-    tDiv.addEventListener('dragend', e => { tDiv.style.display = ''; });
-    // Touch events (mobile)
-    tDiv.addEventListener('touchstart', e => { tDiv.style.opacity = '0.5'; });
-    tDiv.addEventListener('touchend', e => { tDiv.style.opacity = '1'; });
-    tDiv.addEventListener('touchmove', e => {
-      const touch = e.touches[0];
-      const elem = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (elem && elem.classList.contains('kanban-tickets') && elem !== tDiv.parentNode) {
-        elem.appendChild(tDiv);
-      }
-    });
+    const title = document.createElement('h4');
+    title.className = 'kanban-ticket-title';
+    title.textContent = this.ticket.title;
+
+    const meta = document.createElement('div');
+    meta.className = 'kanban-ticket-meta';
+    meta.textContent = this.ticket?.meta?.hint ?? '';
+
+    el.appendChild(title);
+    el.appendChild(meta);
+    return el;
   }
 }

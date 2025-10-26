@@ -1,92 +1,91 @@
-/**
- * Vue principale du Kanban.
- * @class
- * @property {HTMLElement} root
- */
-import { ColumnView } from './ColumnView.js';
 import Sortable from 'sortablejs';
+import { ColumnView } from './ColumnView.js';
 
+/** @class */
 export class KanbanView {
   /**
    * @param {HTMLElement} rootElement
+   * @param {Board} board
    */
-  constructor(rootElement) {
+  constructor(rootElement, board) {
     this.root = rootElement;
+    this.board = board;
+    /** @type {Sortable[]} */
     this.sortables = [];
   }
 
-  /**
-   * Affiche le board avec colonnes et tickets
-   * @param {Column[]} columns
-   */
-  renderBoard(columns) {
+  render() {
     this.root.innerHTML = '';
-    const board = document.createElement('div');
-    board.className = 'kanban-board';
-    // Rendu des colonnes
-    columns.forEach(col => {
+    const boardEl = document.createElement('div');
+    boardEl.className = 'kanban-board';
+
+    this.board.columns.forEach(col => {
       const colView = new ColumnView(col);
-      board.appendChild(colView.render());
+      boardEl.appendChild(colView.render());
     });
-    this.root.appendChild(board);
-    // Drag & drop centralisé avec SortableJS
+
+    this.root.appendChild(boardEl);
     this._initSortables();
   }
 
-  /**
-   * Initialise SortableJS sur toutes les colonnes
-   */
-// KanbanView.js
-_initSortables() {
-  // 1) cleanup
-  this.sortables.forEach(s => s.destroy());
-  this.sortables = [];
+  _initSortables() {
+    // cleanup
+    this.sortables.forEach(s => s.destroy());
+    this.sortables = [];
 
-  const lists = this.root.querySelectorAll('.kanban-tickets');
+    /** @type {NodeListOf<HTMLElement>} */
+    const lists = this.root.querySelectorAll('.kanban-tickets');
 
-  lists.forEach(list => {
-    const sortable = Sortable.create(list, {
-      // ✅ group uniforme et explicite
-      group: { name: 'kanban', pull: true, put: true },
+    lists.forEach(list => {
 
-      // UX/fiabilité
-      animation: 150,
-      direction: 'vertical',
-      draggable: '.kanban-ticket',
-      ghostClass: 'kanban-placeholder',
-      chosenClass: 'kanban-chosen',
-      dragClass: 'kanban-drag',
-      swapThreshold: 0.65,
-      invertSwap: true,
-      invertedSwapThreshold: 0.6,
-      emptyInsertThreshold: 15,
 
-      // Fallback = comportements plus prévisibles multi-navigateurs
-      forceFallback: true,
-      fallbackOnBody: true,
-      fallbackTolerance: 5,
 
-      // Auto-scroll (utile si board déborde)
-      scroll: true,
-      scrollSensitivity: 30,
-      scrollSpeed: 14,
+      const sortable = Sortable.create(list, {
+        group: { name: 'kanban', pull: true, put: true },
+        direction: 'vertical',
+        animation: 150,
+        draggable: '.kanban-ticket',
 
-      onAdd: ({ item, to, newIndex }) => {
-        const ticketId = item.dataset.id;
-        const newColumnId = to.dataset.columnId;
-        // TODO: maj modèle + persist
-        // moveTicket(ticketId, newColumnId, newIndex)
-      },
-      onRemove: ({ item, from }) => {
-        // (optionnel) si tu veux réagir côté source
-      },
-      onEnd: ({ item, to, newIndex }) => {
-        // (même colonne) persist order si besoin
-      }
+        ghostClass: 'kanban-placeholder',
+        chosenClass: 'kanban-chosen',
+        dragClass: 'kanban-drag',
+
+        // ⇣ plus permissif pour insérer ENTRE les tickets et en fin de liste
+        swapThreshold: 1,             // “snap” dès qu’on est dans la liste
+        invertSwap: true,
+        invertedSwapThreshold: 0.8,
+        emptyInsertThreshold: 40,     // colonnes vides + fond de liste
+
+        // ⇣ comportement stable multi-navigateurs
+        forceFallback: true,
+        fallbackOnBody: true,
+        fallbackTolerance: 4,
+
+        // ⇣ évite que des parents mangent les events
+        dragoverBubble: true,
+
+        scroll: true,
+        scrollSensitivity: 30,
+        scrollSpeed: 14,
+
+        onAdd: ({ item, to, newIndex }) => {
+          const id = item.dataset.id;
+          const colId = to.dataset.columnId;
+          this.board.moveTicket(id, colId, newIndex);
+        },
+        onEnd: ({ item, to, from, oldIndex, newIndex }) => {
+          if (to === from && oldIndex !== newIndex) {
+            this.board.reorderInsideColumn(item.dataset.id, newIndex);
+          }
+        }
+      });
+
+
+
+
+
+
+      this.sortables.push(sortable);
     });
-
-    this.sortables.push(sortable);
-  });
-}
-
+  }
 }

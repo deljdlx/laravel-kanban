@@ -1,34 +1,42 @@
 .kanban-ticket {
-  background: $ticket-bg;
-  border: 1px solid $ticket-border;
-  border-radius: $ticket-radius;
-  padding: 8px;
+  background: linear-gradient(180deg, var(--card2), #1a1f27);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   cursor: grab;
-  touch-action: none;
+  user-select: none;
 }
 
 .kanban-ticket:active {
-  opacity: 0.7;
+  cursor: grabbing;
 }
 
+.kanban-ticket-title {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
 
-.kanban-placeholder {
-  opacity: 0.4;
-  outline: 2px dashed #9aa; 
+.kanban-ticket-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* États visuels du drag & drop */
+.kanban-ticket.kanban-placeholder,
+.kanban-ticket.sortable-ghost {
+  opacity: 0.45;
+  outline: 2px dashed #9aa;
   transform: scale(0.98);
 }
 
-/* Feedback supplémentaire (optionnel) */
-.kanban-chosen { 
-  outline: 2px solid #6aa; 
+.kanban-ticket.kanban-chosen,
+.kanban-ticket.sortable-chosen {
+  outline: 2px solid var(--accent);
 }
 
-.kanban-tickets {
-  min-height: 32px;         /* permet de dropper même vide */
-  padding: 4px 0;           /* agrandit la zone de drop */
-}
-
-.kanban-tickets .kanban-ticket.kanban-drag { 
-  cursor: grabbing;
-  border: #f0f 10px dashed;
+.kanban-ticket.kanban-drag,
+.kanban-ticket.sortable-drag {
+  filter: brightness(1.08);
 }
