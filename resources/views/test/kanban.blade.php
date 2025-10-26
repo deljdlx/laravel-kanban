@@ -58,12 +58,12 @@
 </div>
 
 
-
-
-
-
 </div>
 
-@vite('resources/js/kanban/index.js')
+<!-- @vite('resources/js/kanban/index.js') -->
+<!-- @vite('resources/js/kanban2/_bootstrap.js') -->
+
+@vite('resources/js/kanban2/index.js')
+
 </body>
 </html>

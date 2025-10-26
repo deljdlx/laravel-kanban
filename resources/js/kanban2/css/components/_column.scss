@@ -1,0 +1,22 @@
+.kanban-board {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.kanban-column {
+  flex: 1 1 0;
+  background: $kanban-bg;
+  border: 1px solid $kanban-border;
+  border-radius: $column-radius;
+  padding: 8px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.kanban-column-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}

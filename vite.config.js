@@ -14,7 +14,12 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
+                
                 'resources/js/kanban/index.js',
+                'resources/js/kanban2/_bootstrap.js',
+
+
+
                 'resources/js/tabulator-demo.js',
                 'resources/css/tabulator-demo.css'
             ],

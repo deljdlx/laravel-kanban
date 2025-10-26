@@ -1,0 +1,12 @@
+.kanban-ticket {
+  background: $ticket-bg;
+  border: 1px solid $ticket-border;
+  border-radius: $ticket-radius;
+  padding: 8px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.kanban-ticket:active {
+  opacity: 0.7;
+}
