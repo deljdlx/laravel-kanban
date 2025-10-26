@@ -32,7 +32,8 @@ export class ColumnView {
     ticketsList.addEventListener('dragover', e => {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
-      this._showPlaceholder(ticketsList, e.clientY);
+      // Correction : toujours afficher le placeholder même si la colonne est vide
+      this._showPlaceholder(ticketsList, e.clientY, true);
     });
     ticketsList.addEventListener('dragleave', e => {
       this._removePlaceholder(ticketsList);
@@ -83,8 +84,9 @@ export class ColumnView {
    * Affiche un placeholder visuel pour indiquer où le ticket sera inséré
    * @param {HTMLElement} container
    * @param {number} y
+   * @param {boolean} [alwaysShow=false] - Toujours afficher le placeholder
    */
-  _showPlaceholder(container, y) {
+  _showPlaceholder(container, y, alwaysShow = false) {
     this._removePlaceholder(container);
     const afterElem = this._getDragAfterElement(container, y);
     const placeholder = document.createElement('div');
@@ -93,9 +95,10 @@ export class ColumnView {
     placeholder.style.background = '#e0e7ef';
     placeholder.style.border = '2px dashed #2a9d8f';
     placeholder.style.margin = '4px 0';
+    // Correction : si colonne vide, appendChild
     if (afterElem) {
       container.insertBefore(placeholder, afterElem);
-    } else {
+    } else if (alwaysShow || container.children.length === 0) {
       container.appendChild(placeholder);
     }
     this._placeholder = placeholder;
