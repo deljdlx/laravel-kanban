@@ -28,31 +28,7 @@ export class ColumnView {
     const ticketsList = document.createElement('div');
     ticketsList.className = 'kanban-tickets';
     ticketsList.dataset.columnId = this.column.id;
-    // Drag&Drop events
-    ticketsList.addEventListener('dragover', e => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      // Correction : toujours afficher le placeholder même si la colonne est vide
-      this._showPlaceholder(ticketsList, e.clientY, true);
-    });
-    ticketsList.addEventListener('dragleave', e => {
-      this._removePlaceholder(ticketsList);
-    });
-    ticketsList.addEventListener('drop', e => {
-      e.preventDefault();
-      this._removePlaceholder(ticketsList);
-      const ticketId = e.dataTransfer.getData('text/plain');
-      const ticketElem = document.getElementById(ticketId);
-      if (!ticketElem) return;
-      const afterElem = this._getDragAfterElement(ticketsList, e.clientY);
-      if (afterElem) {
-        ticketsList.insertBefore(ticketElem, afterElem);
-      } else {
-        ticketsList.appendChild(ticketElem);
-      }
-    });
-    // Mobile drag&drop (touch)
-    ticketsList.addEventListener('touchmove', e => { e.preventDefault(); });
+    this._bindDragAndDropEvents(ticketsList);
     this.column.tickets.forEach(ticket => {
       const ticketView = new TicketView(ticket);
       ticketsList.appendChild(ticketView.render());
@@ -62,11 +38,41 @@ export class ColumnView {
   }
 
   /**
-   * Trouve l'élément ticket après lequel insérer le ticket déplacé
-   * @param {HTMLElement} container
-   * @param {number} y
-   * @returns {HTMLElement|null}
+   * Ajoute les événements drag&drop à la colonne
+   * @param {HTMLElement} ticketsList
+   * @private
    */
+  _bindDragAndDropEvents(ticketsList) {
+    ticketsList.addEventListener('dragover', e => this._onDragOver(e, ticketsList));
+    ticketsList.addEventListener('dragleave', e => this._onDragLeave(e, ticketsList));
+    ticketsList.addEventListener('drop', e => this._onDrop(e, ticketsList));
+    ticketsList.addEventListener('touchmove', e => { e.preventDefault(); });
+  }
+
+  _onDragOver(e, container) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    this._showPlaceholder(container, e.clientY, true);
+  }
+
+  _onDragLeave(e, container) {
+    this._removePlaceholder(container);
+  }
+
+  _onDrop(e, container) {
+    e.preventDefault();
+    this._removePlaceholder(container);
+    const ticketId = e.dataTransfer.getData('text/plain');
+    const ticketElem = document.getElementById(ticketId);
+    if (!ticketElem) return;
+    const afterElem = this._getDragAfterElement(container, e.clientY);
+    if (afterElem) {
+      container.insertBefore(ticketElem, afterElem);
+    } else {
+      container.appendChild(ticketElem);
+    }
+  }
+
   _getDragAfterElement(container, y) {
     const draggableElements = [...container.querySelectorAll('.kanban-ticket:not([style*="display: none"]):not(.kanban-placeholder)')];
     return draggableElements.reduce((closest, child) => {
@@ -80,12 +86,6 @@ export class ColumnView {
     }, { offset: -Infinity, element: null }).element;
   }
 
-  /**
-   * Affiche un placeholder visuel pour indiquer où le ticket sera inséré
-   * @param {HTMLElement} container
-   * @param {number} y
-   * @param {boolean} [alwaysShow=false] - Toujours afficher le placeholder
-   */
   _showPlaceholder(container, y, alwaysShow = false) {
     this._removePlaceholder(container);
     const afterElem = this._getDragAfterElement(container, y);
@@ -95,7 +95,6 @@ export class ColumnView {
     placeholder.style.background = '#e0e7ef';
     placeholder.style.border = '2px dashed #2a9d8f';
     placeholder.style.margin = '4px 0';
-    // Correction : si colonne vide, appendChild
     if (afterElem) {
       container.insertBefore(placeholder, afterElem);
     } else if (alwaysShow || container.children.length === 0) {
@@ -104,10 +103,6 @@ export class ColumnView {
     this._placeholder = placeholder;
   }
 
-  /**
-   * Enlève le placeholder visuel
-   * @param {HTMLElement} container
-   */
   _removePlaceholder(container) {
     if (this._placeholder && container.contains(this._placeholder)) {
       container.removeChild(this._placeholder);
