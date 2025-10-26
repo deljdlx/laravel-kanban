@@ -1,8 +1,13 @@
 import Sortable from 'sortablejs';
 import { ColumnView } from './ColumnView.js';
 
-/** @class */
-export class KanbanView {
+/** @class
+ * @property {HTMLElement} root
+ * @property {Board} board
+ * @property {Sortable[]} sortables
+ * 
+*/
+export class BoardView {
   /**
    * @param {HTMLElement} rootElement
    * @param {Board} board
@@ -12,6 +17,21 @@ export class KanbanView {
     this.board = board;
     /** @type {Sortable[]} */
     this.sortables = [];
+
+    this.listeners = { };
+  }
+
+  addEventListener(eventName, callback) {
+    if (!this.listeners[eventName]) {
+      this.listeners[eventName] = [];
+    }
+    this.listeners[eventName].push(callback);
+  }
+
+  fireEvent(eventName, detail = {}) {
+    if (this.listeners[eventName]) {
+      this.listeners[eventName].forEach(cb => cb({ type: eventName, detail }));
+    }
   }
 
   render() {
@@ -37,8 +57,6 @@ export class KanbanView {
     const lists = this.root.querySelectorAll('.kanban-tickets');
 
     lists.forEach(list => {
-
-
 
       const sortable = Sortable.create(list, {
         group: { name: 'kanban', pull: true, put: true },
@@ -71,19 +89,27 @@ export class KanbanView {
         onAdd: ({ item, to, newIndex }) => {
           const id = item.dataset.id;
           const colId = to.dataset.columnId;
-          this.board.moveTicket(id, colId, newIndex);
+          // this.board.moveTicket(id, colId, newIndex);
+
+          const customEvent = new CustomEvent('ticketMoved', {
+            detail: { ticketId: id, toColumnId: colId, toIndex: newIndex }
+          });
+
+          this.fireEvent('ticketMoved', { ticketId: id, toColumnId: colId, toIndex: newIndex });
+          this.root.dispatchEvent(customEvent);
+
         },
         onEnd: ({ item, to, from, oldIndex, newIndex }) => {
           if (to === from && oldIndex !== newIndex) {
-            this.board.reorderInsideColumn(item.dataset.id, newIndex);
+            // this.board.reorderInsideColumn(item.dataset.id, newIndex);
+            const customEvent = new CustomEvent('ticketReordered', {
+              detail: { ticketId: item.dataset.id, newIndex: newIndex }
+            });
+            this.fireEvent('ticketReordered', { ticketId: item.dataset.id, newIndex: newIndex });
+            this.root.dispatchEvent(customEvent);
           }
         }
       });
-
-
-
-
-
 
       this.sortables.push(sortable);
     });

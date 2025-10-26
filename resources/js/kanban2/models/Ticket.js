@@ -1,14 +1,13 @@
-/**
- * Représente un ticket du Kanban.
- * @class
- * @property {string} id
- * @property {string} title
- * @property {string} description
- */
+/** @class */
 export class Ticket {
-  constructor({ id, title, description }) {
-    this.id = id;
+  /**
+   * @param {number|string} id
+   * @param {string} title
+   * @param {object} [meta]
+   */
+  constructor(id, title, meta = {}) {
+    this.id = String(id);
     this.title = title;
-    this.description = description || '';
+    this.meta = meta;
   }
 }
