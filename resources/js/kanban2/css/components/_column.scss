@@ -46,3 +46,22 @@
   text-align: center;
   opacity: 0.75;
 }
+
+
+/* feedback colonnes */
+.kanban-column.kanban-column-ghost,
+.kanban-column.sortable-ghost {
+  opacity: 0.6;
+  outline: 2px dashed #9aa;
+  transform: scale(0.99);
+}
+
+.kanban-column.kanban-column-chosen,
+.kanban-column.sortable-chosen {
+  outline: 2px solid var(--accent);
+}
+
+.kanban-column.kanban-column-drag,
+.kanban-column.sortable-drag {
+  filter: brightness(1.06);
+}
