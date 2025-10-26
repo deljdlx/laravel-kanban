@@ -46,12 +46,10 @@ export class Kanban {
 
   handleAddTicket(e) {
     const { column } = e.detail;
-    const ticketModal = new TicketModal();
+    const ticketModal = new TicketModal(this.board);
     ticketModal.render();
     ticketModal.addEventListener('save', (ev => {
-      const { title, description } = ev.detail;
-      const newTicket = new Ticket(title, {hint: description});
-      this.boardController.addTicketToColumn(column.id, newTicket);
+      this.boardController.addTicketToColumn(column.id, ev.detail);
     }));
     ticketModal.open();
   }

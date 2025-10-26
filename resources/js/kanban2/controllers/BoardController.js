@@ -1,3 +1,5 @@
+import { Ticket } from '../models/Ticket.js';
+
 export class BoardController {
 
   constructor(board, view) {
@@ -5,7 +7,12 @@ export class BoardController {
     this.view = view;
   }
 
-  addTicketToColumn(columnId, ticket) {
+  addTicketToColumn(columnId, ticketData) {
+
+    const { title } = ticketData;
+    const ticket = new Ticket(title, ticketData);
+
+
     const column = this.board.column(columnId);
     if (!column) return false;
 

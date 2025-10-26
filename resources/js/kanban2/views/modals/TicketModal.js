@@ -1,9 +1,19 @@
 import { Modal } from '../components/Modal.js';
 
+
+import { Taxonomy } from '../../models/Taxonomy.js';
+import { TaxonomyView } from '../components/TaxonomyView.js';
+
 export class TicketModal extends Modal {
 
-  constructor(id = 'ticketModal', rootElement = null) {
+  constructor(board, id = 'ticketModal', rootElement = null) {
     super(id, rootElement);
+
+    console.group('%cTicketModal.js :: 8 =============================', 'color: #544728; font-size: 1rem');
+    console.log("ICI");
+    console.groupEnd();
+
+    this.board = board;
     this.title = 'Ticket Details';
 
     this.setContent(this.html());
@@ -13,6 +23,12 @@ export class TicketModal extends Modal {
       <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
     `);
 
+
+    const taxonomies = this.board.getTaxonomies();
+    taxonomies.forEach(taxonomy => {
+      const taxonomyView = new TaxonomyView(taxonomy);
+      this.contentElement.appendChild(taxonomyView.render());
+    });
     
     this.saveButton = this.footerElement.querySelector('.btn-primary');
     this.form = this.element.querySelector('#ticket-form');
@@ -28,10 +44,19 @@ export class TicketModal extends Modal {
   }
 
   fireSave() {
-    const title = this.form.querySelector('#ticket-title').value;
-    const description = this.form.querySelector('#ticket-description').value;
+    const data = {};
+    data.taxonomies = data.taxonomies || {};
 
-    this.fireEvent('save', { title, description });
+    data.title = this.form.querySelector('#ticket-title').value;
+    data.description = this.form.querySelector('#ticket-description').value;
+
+
+    document.querySelectorAll('.kanban-taxonomy').forEach(select => {
+      const taxonomyId = select.dataset.id;
+      data.taxonomies[taxonomyId] = select.value;
+    });
+
+    this.fireEvent('save', data);
   }
 
 

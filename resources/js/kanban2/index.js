@@ -9,6 +9,8 @@ import { BoardView } from './views/BoardView.js';
 import { Board } from './models/Board.js';
 import { Column } from './models/Column.js';
 import { Ticket } from './models/Ticket.js';
+import { Taxonomy } from './models/Taxonomy.js';
+import { Term } from './models/Term.js';
 
 import './css/main.scss';
 
@@ -21,22 +23,33 @@ import './css/main.scss';
   
   // Données d’exemple
   const todo = new Column(board, 'todo', 'À faire');
-  todo.addTicket(new Ticket('Mettre en place Vite', { hint: 'npm install && npm run dev' }));
-  todo.addTicket(new Ticket('Créer structure fichiers', { hint: 'models/, views/, controllers/' }));
-  todo.addTicket(new Ticket('Implémenter drag & drop', { hint: 'SortableJS' }));
+  todo.addTicket(new Ticket('Mettre en place Vite', { description: 'npm install && npm run dev', taxonomies:{
+    priority: 'high'
+  }}));
+  todo.addTicket(new Ticket('Créer structure fichiers', { description: 'models/, views/, controllers/' }));
+  todo.addTicket(new Ticket('Implémenter drag & drop', { description: 'SortableJS' }));
 
   board.addColumn(todo);
 
   const doing = new Column(board, 'doing');
-  doing.addTicket(new Ticket('Créer modèles JS', { hint: 'Board, Column, Ticket' }));
-  doing.addTicket(new Ticket('Créer vues JS', { hint: 'BoardView, ColumnView, TicketView' }));
+  doing.addTicket(new Ticket('Créer modèles JS', { description: 'Board, Column, Ticket' }));
+  doing.addTicket(new Ticket('Créer vues JS', { description: 'BoardView, ColumnView, TicketView' }));
 
   board.addColumn(doing);
 
   const done = new Column(board, 'done', 'Terminé');
-  done.addTicket(new Ticket('Initialiser projet', { hint: 'npm init, installer dépendances' }));
-  done.addTicket(new Ticket('Configurer Vite', { hint: 'vite.config.js' }));
+  done.addTicket(new Ticket('Initialiser projet', { description: 'npm init, installer dépendances' }));
+  done.addTicket(new Ticket('Configurer Vite', { description: 'vite.config.js' }));
   board.addColumn(done);
+
+  const priorityTaxonomy = new Taxonomy('priority', 'Priority', [
+    new Term('low', 'Low'),
+    new Term('medium', 'Medium'),
+    new Term('high', 'High'),
+  ]);
+
+  board.addTaxonomy(priorityTaxonomy);
+
 
 
   const kanban = new Kanban(board, '#kanban-root');

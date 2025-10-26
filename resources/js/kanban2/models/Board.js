@@ -22,6 +22,14 @@ export class Board {
     this.columns.push(column);
   }
 
+  addTaxonomy(taxonomy) {
+    this.taxonomies.push(taxonomy);
+  }
+
+  getTaxonomies() {
+    return this.taxonomies;
+  }
+
 
   /**
    * Trouve une colonne par id.
