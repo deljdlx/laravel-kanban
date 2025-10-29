@@ -1,4 +1,5 @@
 import { Modal } from '../components/Modal.js';
+import { Ticket } from '../../models/Ticket.js';
 
 
 import { Taxonomy } from '../../models/Taxonomy.js';
@@ -6,8 +7,10 @@ import { TaxonomyView } from '../components/TaxonomyView.js';
 
 export class EditTicketModal extends Modal {
 
-  constructor(board, id = 'ticketModal', rootElement = null) {
+  constructor(board, ticketModel = null, id = 'ticketModal', rootElement = null) {
     super(board, id, rootElement);
+
+    this.ticketModel = ticketModel;
 
     this.title = 'Ticket Details';
 
@@ -20,8 +23,23 @@ export class EditTicketModal extends Modal {
 
 
     const taxonomies = this.boardModel.getTaxonomies();
+
+    console.group('%cEditTicketModal.js :: 27 =============================', 'color: #456019; font-size: 1rem');
+    console.log(taxonomies);
+    console.groupEnd();
+
+    console.group('%cEditTicketModal.js :: 31 =============================', 'color: #378406; font-size: 1rem');
+    console.log(this.ticketModel);
+    console.groupEnd();
+
+
     taxonomies.forEach(taxonomy => {
-      const taxonomyView = new TaxonomyView(taxonomy);
+      const taxonomyView = new TaxonomyView(
+        this.boardView,
+        taxonomy,
+        this.ticketModel ? this.ticketModel.getTaxonomyValue(taxonomy.id) : null
+
+      );
       this.contentElement.appendChild(taxonomyView.render());
     });
     
@@ -58,13 +76,16 @@ export class EditTicketModal extends Modal {
   html() {
     return `
       <form id="ticket-form">
+        <input type="hidden" id="ticket-id" value="${this.ticketModel ? this.ticketModel.id : ''}">
         <div class="mb-3">
           <label for="ticket-title" class="form-label">Title</label>
-          <input type="text" class="form-control" id="ticket-title" value="">
+          <input type="text" class="form-control" id="ticket-title" value="${this.ticketModel ? this.ticketModel.getTitle() : ''}">
         </div>
         <div class="mb-3">
           <label for="ticket-description" class="form-label">Description</label>
-          <textarea class="form-control" id="ticket-description" rows="3"></textarea>
+          <textarea class="form-control" id="ticket-description" rows="3">
+            ${this.ticketModel ? this.ticketModel.getDescription() : ''}
+          </textarea>
         </div>
       </form>
     `;

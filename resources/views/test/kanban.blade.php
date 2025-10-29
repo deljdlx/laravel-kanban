@@ -6,6 +6,11 @@
     <title>Kanban (SortableJS, no backend)</title>
 </head>
 <body>
+
+
+  <div id="app"></div>
+
+
 <div class="wrap">
 
 
@@ -52,9 +57,6 @@
 
 
 </div>
-
-<!-- @vite('resources/js/kanban/index.js') -->
-<!-- @vite('resources/js/kanban2/_bootstrap.js') -->
 
 @vite('resources/js/kanban2/index.js')
 

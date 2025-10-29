@@ -54,7 +54,7 @@ export class TicketView extends View{
   }
 
   openEditModal(ticket) {
-    const editModal = new EditTicketModal(this.boardView);
+    const editModal = new EditTicketModal(this.boardView, this.model);
     editModal.render();
     // Pré-remplir le formulaire avec les données du ticket
     editModal.form.querySelector('#ticket-title').value = ticket.getTitle();

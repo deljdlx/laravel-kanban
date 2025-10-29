@@ -38,4 +38,13 @@ export class Ticket {
   getTaxonomies() {
     return this.taxonomies;
   }
+
+  getTaxonomyValue(taxonomyId) {
+
+    console.group('%cTicket.js :: 44 =============================', 'color: #780736; font-size: 1rem');
+    console.log(this.taxonomies);
+    console.groupEnd();
+
+    return this.taxonomies
+  }
 }
