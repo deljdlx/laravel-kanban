@@ -94,6 +94,8 @@
     <h1>Kanban en cours de construction</h1>
     <p>Nous travaillons actuellement sur une nouvelle version du <strong>Kanban</strong>.<br>
     Revenez bientôt pour découvrir un espace plus rapide, plus fluide et plus élégant.</p>
+
+    <p> Test page: <a href="/test/kanban" target="_blank" rel="noopener">/test/kanban</a> </p>
   </div>
 </body>
 </html>
